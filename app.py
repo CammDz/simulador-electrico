@@ -233,7 +233,7 @@ if calcular:
     st.markdown('<hr class="fancy-divider">', unsafe_allow_html=True)
     st.markdown('<div class="section-badge">🎨 &nbsp; Representación Vectorial</div>', unsafe_allow_html=True)
 
-    fig, ax = plt.subplots(figsize=(9, 3.4))
+    fig, ax = plt.subplots(figsize=(9, 4.0))
     fig.patch.set_facecolor('#f8faff')
     ax.set_facecolor('#f8faff')
 
@@ -273,11 +273,11 @@ if calcular:
         mpatches.Patch(color='#3b82f6', label='Carga negativa (−)'),
         mpatches.Patch(color=mpl_color, label=f'Fuerza de {tipo}'),
     ]
-    ax.legend(handles=patches, loc='upper right', fontsize=8.5,
+    ax.legend(handles=patches, loc='lower center', bbox_to_anchor=(0.5, -0.22), ncol=3, fontsize=8.5,
               framealpha=0.95, edgecolor='#e0e7ff', fancybox=True)
 
     ax.set_xlim(-r*0.55, r*1.6)
-    ax.set_ylim(-0.6, 0.55)
+    ax.set_ylim(-0.75, 0.55)
     for spine in ax.spines.values():
         spine.set_visible(False)
     ax.set_xticks([]); ax.set_yticks([])
