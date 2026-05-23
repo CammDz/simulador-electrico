@@ -506,7 +506,7 @@ if calcular:
 
         ax1.grid(True, linestyle='--', alpha=0.2, color='#cbd5e1', linewidth=1.0)
         ax1.set_axisbelow(True)
-        ax1.axhline(0, color='#94a3b8', linewidth=1.5, alpha=0.8, linestyle='-', linewidth=1.8)
+        ax1.axhline(0, color='#94a3b8', linewidth=1.8, alpha=0.8, linestyle='-')        
         ax1.axvline(0, color='#94a3b8', linewidth=1.5, alpha=0.8, linestyle='-', linewidth=1.8)
         ax1.set_xlabel("x (metros)", fontsize=12, color='#1e293b', fontweight='700')
         ax1.set_ylabel("y (metros)", fontsize=12, color='#1e293b', fontweight='700')
