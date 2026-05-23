@@ -527,6 +527,113 @@ div[data-testid="stButton"] > button:active {
   padding: 10px 14px 2px;
 }
 
+/* ── ANALYSIS CARDS ── */
+.analysis-card {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 22px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+
+.analysis-card-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--border);
+  letter-spacing: 0.02em;
+}
+
+.analysis-card p {
+  font-size: 0.85rem;
+  line-height: 1.7;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.analysis-card p:last-child { margin-bottom: 0; }
+
+.analysis-card strong {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.analysis-card .tag {
+  display: inline-block;
+  font-size: 0.64rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.analysis-card .tag.attr {
+  background: rgba(5,150,105,0.1);
+  color: var(--green);
+  border: 1px solid rgba(5,150,105,0.2);
+}
+
+.analysis-card .tag.rep {
+  background: rgba(220,38,38,0.1);
+  color: var(--red);
+  border: 1px solid rgba(220,38,38,0.2);
+}
+
+.analysis-card .tag.neut {
+  background: rgba(2,132,199,0.08);
+  color: var(--blue);
+  border: 1px solid rgba(2,132,199,0.18);
+}
+
+.analysis-card .highlight-box {
+  background: #f1f5f9;
+  border-left: 3px solid var(--blue);
+  padding: 10px 14px;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin: 8px 0;
+  font-size: 0.83rem;
+  line-height: 1.6;
+}
+
+.analysis-card .highlight-box.orange {
+  border-left-color: #ea580c;
+}
+
+.analysis-card .highlight-box.green {
+  border-left-color: var(--green);
+}
+
+.analysis-conclusion {
+  background: linear-gradient(135deg, rgba(2,132,199,0.04), rgba(124,58,237,0.04));
+  border: 1px solid rgba(2,132,199,0.15);
+  border-radius: var(--radius-lg);
+  padding: 18px 22px;
+  margin-top: 4px;
+}
+
+.analysis-conclusion-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--blue);
+  margin-bottom: 8px;
+  letter-spacing: 0.04em;
+}
+
+.analysis-conclusion p {
+  font-size: 0.85rem;
+  line-height: 1.7;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.analysis-conclusion p:last-child { margin-bottom: 0; }
+
 /* ── ERROR ── */
 div[data-testid="stAlert"] {
   background: rgba(220,38,38,0.06) !important;
@@ -754,10 +861,216 @@ if calcular:
         })
 
     # ─────────────────────────────────────────
+    # ANALYSIS FUNCTIONS
+    # ─────────────────────────────────────────
+    def analisis_par_html(par, c1_orig, c2_orig):
+        parts = []
+        interaccion = "atracción" if par['atraccion'] else "repulsión"
+        signos = "opuestos" if par['atraccion'] else "iguales"
+        tag_cls = "attr" if par['atraccion'] else "rep"
+        tag_txt = "Atracción" if par['atraccion'] else "Repulsión"
+
+        parts.append(f'<span class="tag {tag_cls}">{tag_txt}</span> '
+                      f'Las cargas <strong>Q{par["i"]}</strong> ({par["q1"]:+.1f} µC) y '
+                      f'<strong>Q{par["j"]}</strong> ({par["q2"]:+.1f} µC) '
+                      f'interactúan por <strong>{interaccion}</strong> ya que sus signos son {signos}.')
+
+        parts.append(f'La magnitud de la fuerza es <strong>{par["F"]:.4f} N</strong> y '
+                      f'actúa a una distancia de separación de <strong>{par["r"]:.3f} m</strong>. '
+                      f'La distancia es un factor crítico: a menor separación, mayor es la fuerza '
+                      f'(relación inversa al cuadrado de la distancia, <em>F ∝ 1/r²</em>).')
+
+        ang = abs(par['theta'])
+        if ang < 15:
+            dir_desc = "predominantemente horizontal"
+        elif ang > 75:
+            dir_desc = "predominantemente vertical"
+        else:
+            dir_desc = f"diagonal con un ángulo de {par['theta']:.1f}° respecto a la horizontal"
+        parts.append(f'Vectorialmente, la fuerza se orienta de manera <strong>{dir_desc}</strong>. '
+                      f'El ángulo θ = <strong>{par["theta"]:.1f}°</strong> determina la inclinación del vector '
+                      f'resultante en el plano cartesiano.')
+
+        fx_mag, fy_mag = abs(par['Fx']), abs(par['Fy'])
+        if fx_mag > fy_mag * 1.5:
+            comp_desc = f'La componente <strong>Fx = {par["Fx"]:+.4f} N</strong> domina sobre Fy, indicando que el efecto horizontal es predominante.'
+        elif fy_mag > fx_mag * 1.5:
+            comp_desc = f'La componente <strong>Fy = {par["Fy"]:+.4f} N</strong> domina sobre Fx, indicando que el efecto vertical es predominante.'
+        else:
+            comp_desc = f'Las componentes <strong>Fx = {par["Fx"]:+.4f} N</strong> y <strong>Fy = {par["Fy"]:+.4f} N</strong> están balanceadas, generando una fuerza diagonal equilibrada.'
+        parts.append(comp_desc)
+
+        q1m, q2m = abs(par['q1']), abs(par['q2'])
+        if q1m > q2m * 1.15:
+            parts.append(f'<strong>Q{par["i"]}</strong> posee una carga de mayor magnitud ({q1m:.1f} µC frente a {q2m:.1f} µC), '
+                          f'por lo que ejerce una influencia eléctrica más intensa sobre Q{par["j"]}.')
+        elif q2m > q1m * 1.15:
+            parts.append(f'<strong>Q{par["j"]}</strong> posee una carga de mayor magnitud ({q2m:.1f} µC frente a {q1m:.1f} µC), '
+                          f'por lo que ejerce una influencia eléctrica más intensa sobre Q{par["i"]}.')
+
+        return '<p>' + '</p><p>'.join(parts) + '</p>'
+
+    def analisis_neta_html(fn, carga_orig):
+        parts = []
+        fx, fy, fmag = fn['Fx'], fn['Fy'], fn['F']
+        angle = fn['theta']
+
+        if fmag < 1e-10:
+            return f'<p>La carga <strong>{fn["indice"]}</strong> ({carga_orig["q"]:+.1f} µC) se encuentra en <strong>equilibrio electrostático</strong>: la fuerza neta es aproximadamente cero, lo que indica que las contribuciones de todas las demás cargas se cancelan entre sí.</p>'
+
+        if fx > 0 and fy > 0:
+            dir_desc = "se dirige hacia el primer cuadrante (noreste)"
+            cuad = "primer cuadrante"
+        elif fx < 0 and fy > 0:
+            dir_desc = "se dirige hacia el segundo cuadrante (noroeste)"
+            cuad = "segundo cuadrante"
+        elif fx < 0 and fy < 0:
+            dir_desc = "se dirige hacia el tercer cuadrante (suroeste)"
+            cuad = "tercer cuadrante"
+        elif fx > 0 and fy < 0:
+            dir_desc = "se dirige hacia el cuarto cuadrante (sureste)"
+            cuad = "cuarto cuadrante"
+        elif fx > 0:
+            dir_desc = "es horizontal hacia la derecha"
+        elif fx < 0:
+            dir_desc = "es horizontal hacia la izquierda"
+        elif fy > 0:
+            dir_desc = "es vertical hacia arriba"
+        else:
+            dir_desc = "es vertical hacia abajo"
+
+        parts.append(f'La <strong>carga {fn["indice"]}</strong> ({carga_orig["q"]:+.1f} µC) experimenta una '
+                      f'<strong>fuerza neta de {fmag:.4f} N</strong> que {dir_desc}, '
+                      f'con un ángulo resultante de <strong>{angle:.1f}°</strong>.')
+
+        parts.append(f'La orientación hacia el <strong>{cuad}</strong> del plano cartesiano indica que las '
+                      f'fuerzas ejercidas por las demás cargas no se cancelan completamente, '
+                      f'generando un desplazamiento neto en esa dirección.')
+
+        if abs(fx) > abs(fy) * 1.5:
+            parts.append(f'La componente <strong>horizontal predomina</strong> (|Fx| = {abs(fx):.4f} N > |Fy| = {abs(fy):.4f} N), '
+                          f'lo que sugiere que las cargas con mayor influencia se encuentran '
+                          f'dispuestas lateralmente respecto a esta carga.')
+        elif abs(fy) > abs(fx) * 1.5:
+            parts.append(f'La componente <strong>vertical predomina</strong> (|Fy| = {abs(fy):.4f} N > |Fx| = {abs(fx):.4f} N), '
+                          f'lo que sugiere que las cargas con mayor influencia se encuentran '
+                          f'dispuestas verticalmente respecto a esta carga.')
+        else:
+            parts.append(f'Las componentes están <strong>balanceadas</strong> (Fx = {fx:+.4f} N, Fy = {fy:+.4f} N), '
+                          f'lo que indica una influencia múltiple y equilibrada en ambas direcciones.')
+
+        return '<p>' + '</p><p>'.join(parts) + '</p>'
+
+    def analisis_sistema_html():
+        n = len(cargas)
+        pos = sum(1 for c in cargas if c['q'] > 0)
+        neg = n - pos
+        total_pares = len(pares_info)
+        atracciones = sum(1 for p in pares_info if p['atraccion'])
+        repulsiones = total_pares - atracciones
+
+        lines = []
+        lines.append(f'El sistema está compuesto por <strong>{n} cargas</strong> ({pos} positiva{"" if pos==1 else "s"}, '
+                      f'{neg} negativa{"" if neg==1 else "s"}). Se generan <strong>{total_pares} interacciones</strong> '
+                      f'entre pares: {atracciones} de atracción y {repulsiones} de repulsión.')
+
+        if atracciones > repulsiones:
+            lines.append('Predominan las <strong>fuerzas de atracción</strong>, lo que sugiere que el sistema '
+                          'tiende a la contracción: las cargas se atraen entre sí predominantemente.')
+        elif repulsiones > atracciones:
+            lines.append('Predominan las <strong>fuerzas de repulsión</strong>, lo que sugiere que el sistema '
+                          'tiende a la expansión: las cargas se repelen entre sí predominantemente.')
+        else:
+            lines.append('Existe un <strong>equilibrio entre atracciones y repulsiones</strong>, '
+                          'generando una dinámica de interacciones balanceada.')
+
+        netas_mag = [fn['F'] for fn in fuerzas_netas]
+        max_neta = max(netas_mag)
+        min_neta = min(netas_mag)
+        carga_max = fuerzas_netas[netas_mag.index(max_neta)]['indice']
+        carga_min = fuerzas_netas[netas_mag.index(min_neta)]['indice']
+        lines.append(f'La carga con <strong>mayor fuerza neta</strong> es <strong>Q{carga_max}</strong> ({max_neta:.4f} N), '
+                      f'mientras que la de <strong>menor fuerza neta</strong> es <strong>Q{carga_min}</strong> ({min_neta:.4f} N). '
+                      f'Esta diferencia refleja cómo la distribución espacial y las magnitudes de carga '
+                      f'afectan el desequilibrio de fuerzas en cada punto.')
+
+        # Force gradient
+        fx_all = [fn['Fx'] for fn in fuerzas_netas]
+        fy_all = [fn['Fy'] for fn in fuerzas_netas]
+        fx_pos = sum(1 for v in fx_all if v > 0)
+        fx_neg = sum(1 for v in fx_all if v < 0)
+        fy_pos = sum(1 for v in fy_all if v > 0)
+        fy_neg = sum(1 for v in fy_all if v < 0)
+
+        if fx_pos > fx_neg and fy_pos > fy_neg:
+            lines.append(f'<strong>Tendencia general del sistema:</strong> La mayoría de las fuerzas netas apuntan '
+                          f'hacia el primer cuadrante (Fx > 0, Fy > 0), lo que indica un desplazamiento neto '
+                          f'preferencial hacia el noreste del plano.')
+        elif fx_neg > fx_pos and fy_pos > fy_neg:
+            lines.append(f'<strong>Tendencia general del sistema:</strong> Predominan las fuerzas hacia el segundo cuadrante '
+                          f'(Fx < 0, Fy > 0), indicando un desplazamiento neto hacia el noroeste.')
+        elif fx_neg > fx_pos and fy_neg > fy_pos:
+            lines.append(f'<strong>Tendencia general del sistema:</strong> Predominan las fuerzas hacia el tercer cuadrante '
+                          f'(Fx < 0, Fy < 0), indicando un desplazamiento neto hacia el suroeste.')
+        elif fx_pos > fx_neg and fy_neg > fy_pos:
+            lines.append(f'<strong>Tendencia general del sistema:</strong> Predominan las fuerzas hacia el cuarto cuadrante '
+                          f'(Fx > 0, Fy < 0), indicando un desplazamiento neto hacia el sureste.')
+
+        return '<p>' + '</p><p>'.join(lines) + '</p>'
+
+    def conclusiones_html():
+        n = len(cargas)
+        pos = sum(1 for c in cargas if c['q'] > 0)
+        total_pares = len(pares_info)
+        atracciones = sum(1 for p in pares_info if p['atraccion'])
+        netas_mag = [fn['F'] for fn in fuerzas_netas]
+        prom_neta = sum(netas_mag) / len(netas_mag) if netas_mag else 0
+        dists = [p['r'] for p in pares_info]
+        dist_prom = sum(dists) / len(dists) if dists else 0
+
+        lines = []
+        lines.append(f'<strong>Comportamiento electrostático:</strong> El sistema de {n} cargas ({pos} positiva{"" if pos==1 else "s"}, '
+                      f'{n-pos} negativa{"" if n-pos==1 else "s"}) presenta un total de {total_pares} interacciones '
+                      f'coulombianas. La interacción entre cada par obedece la Ley de Coulomb, '
+                      f'donde la magnitud de la fuerza es directamente proporcional al producto de las cargas '
+                      f'e inversamente proporcional al cuadrado de la distancia que las separa.')
+
+        lines.append(f'<strong>Distribución espacial:</strong> La distancia promedio entre cargas es de '
+                      f'<strong>{dist_prom:.3f} m</strong>. Las cargas más cercanas generan fuerzas de mayor magnitud, '
+                      f'mientras que las más alejadas contribuyen con menor intensidad, '
+                      f'lo que demuestra el efecto del inverso del cuadrado de la distancia.')
+
+        lines.append(f'<strong>Análisis vectorial:</strong> Las fuerzas se descomponen en componentes cartesianas '
+                      f'Fx y Fy, cuyo análisis permite comprender la dirección y magnitud del efecto neto '
+                      f'sobre cada carga. La fuerza neta promedio del sistema es de <strong>{prom_neta:.4f} N</strong>, '
+                      f'lo que refleja el grado de desequilibrio electrostático presente.')
+
+        if atracciones > total_pares * 0.6:
+            lines.append(f'<strong>Observación:</strong> La mayoría de las interacciones son de atracción, '
+                          f'lo que indica una configuración donde predominan los signos opuestos. '
+                          f'En un sistema con predominancia de atracción, las cargas tienden a '
+                          f'moverse unas hacia otras, reduciendo la energía potencial del sistema.')
+        elif (total_pares - atracciones) > total_pares * 0.6:
+            lines.append(f'<strong>Observación:</strong> La mayoría de las interacciones son de repulsión, '
+                          f'lo que indica una configuración donde predominan los signos iguales. '
+                          f'En un sistema con predominancia de repulsión, las cargas tienden a '
+                          f'separarse, aumentando la energía potencial del sistema.')
+
+        q_signo = [(c['q'], c['indice']) for c in cargas]
+        pares_misma_carga = [(p['i'], p['j']) for p in pares_info
+                              if cargas[p['i']-1]['q'] * cargas[p['j']-1]['q'] > 0]
+        if len(pares_misma_carga) == total_pares and total_pares > 0:
+            lines.append(f'<strong>Conclusión global:</strong> Todas las cargas poseen el mismo signo, '
+                          f'por lo que únicamente existen fuerzas de repulsión. '
+                          f'El sistema se encuentra en un estado de expansión electrostática.')
+
+        return '<p>' + '</p><p>'.join(lines) + '</p>'
+
+    # ─────────────────────────────────────────
     # RESULTS
     # ─────────────────────────────────────────
     st.markdown('<div class="section-label">Análisis de resultados</div>', unsafe_allow_html=True)
-    tab1, tab2, tab3 = st.tabs(["Fuerzas entre pares", "Fuerza neta por carga", "Visualización 2D"])
+    tab1, tab2, tab3, tab4 = st.tabs(["Fuerzas entre pares", "Fuerza neta por carga", "Visualización 2D", "Análisis e interpretación"])
 
     with tab1:
         html = '<div class="result-grid">'
@@ -935,6 +1248,44 @@ if calcular:
                 st.pyplot(fig2, use_container_width=True)
                 plt.close(fig2)
             st.markdown('</div>', unsafe_allow_html=True)
+
+    with tab4:
+        pares_idx = [(p['i'], p['j']) for p in pares_info]
+        html = '<div style="display:flex;flex-direction:column;gap:4px;">'
+
+        # 1. Resumen del sistema
+        html += f'<div class="analysis-card">'
+        html += f'<div class="analysis-card-title">📋 Resumen del sistema</div>'
+        html += analisis_sistema_html()
+        html += f'</div>'
+
+        # 2. Análisis por pares
+        html += f'<div class="analysis-card">'
+        html += f'<div class="analysis-card-title">⚡ Análisis detallado por par</div>'
+        for par in pares_info:
+            c1 = cargas[par['i']-1]
+            c2 = cargas[par['j']-1]
+            html += f'<p style="margin-top:10px;font-size:0.78rem;font-weight:600;color:var(--text-muted);letter-spacing:0.05em;text-transform:uppercase;">Par {par["i"]}–{par["j"]}</p>'
+            html += analisis_par_html(par, c1, c2)
+        html += f'</div>'
+
+        # 3. Análisis de fuerza neta
+        html += f'<div class="analysis-card">'
+        html += f'<div class="analysis-card-title">🧭 Análisis de fuerza neta por carga</div>'
+        for fn in fuerzas_netas:
+            c = cargas[fn['indice']-1]
+            html += f'<p style="margin-top:10px;font-size:0.78rem;font-weight:600;color:var(--text-muted);letter-spacing:0.05em;text-transform:uppercase;">Carga {fn["indice"]}</p>'
+            html += analisis_neta_html(fn, c)
+        html += f'</div>'
+
+        # 4. Conclusiones
+        html += f'<div class="analysis-conclusion">'
+        html += f'<div class="analysis-conclusion-title">📐 Interpretación física del sistema</div>'
+        html += conclusiones_html()
+        html += f'</div>'
+
+        html += '</div>'
+        st.markdown(html, unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────
 # FOOTER
