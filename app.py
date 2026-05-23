@@ -1,879 +1,491 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-import numpy as np
-import math
 import base64
-import os
+from pathlib import Path
 
-# ─────────────────────────────────────────────
-# PAGE CONFIG
-# ─────────────────────────────────────────────
+K = 8.99e9
+
 st.set_page_config(
-    page_title="ElectroSim · Coulomb Lab",
+    page_title="Simulador de Fuerza Eléctrica — Ley de Coulomb",
     page_icon="⚡",
-    layout="wide",
-    initial_sidebar_state="collapsed"
+    layout="centered"
 )
 
-# ─────────────────────────────────────────────
-# DESIGN SYSTEM & CSS
-# ─────────────────────────────────────────────
+# ─── Cargar logo ──────────────────────────────────────────────────────────────
+def get_logo_b64(path: str) -> str:
+    try:
+        return base64.b64encode(Path(path).read_bytes()).decode()
+    except Exception:
+        return ""
+
+logo_b64 = get_logo_b64("logo.png")
+
+if logo_b64:
+    logo_html = f'''
+    <img src="data:image/png;base64,{logo_b64}"
+         style="height:72px;width:72px;object-fit:contain;flex-shrink:0;
+                border-radius:10px;" />
+    '''
+else:
+    logo_html = '<span style="font-size:44px;line-height:1;flex-shrink:0;">⚡</span>'
+
+# ─── CSS ─────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --bg:           #080c14;
-  --surface-1:    #0d1220;
-  --surface-2:    #111827;
-  --surface-3:    #1a2236;
-  --border:       rgba(255,255,255,0.07);
-  --border-glow:  rgba(56,189,248,0.25);
-  --text:         #e2e8f0;
-  --text-muted:   #64748b;
-  --text-faint:   #334155;
-  --blue:         #38bdf8;
-  --blue-dim:     rgba(56,189,248,0.12);
-  --purple:       #a78bfa;
-  --purple-dim:   rgba(167,139,250,0.10);
-  --red:          #f87171;
-  --green:        #34d399;
-  --mono:         'JetBrains Mono', monospace;
-  --sans:         'Inter', -apple-system, sans-serif;
-  --radius-sm:    8px;
-  --radius-md:    12px;
-  --radius-lg:    18px;
-  --radius-xl:    24px;
-}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 html, body,
+[data-testid="stApp"],
 [data-testid="stAppViewContainer"],
 [data-testid="stMain"],
-[data-testid="block-container"] {
-  background: var(--bg) !important;
-  font-family: var(--sans) !important;
-  color: var(--text) !important;
+.main, section.main {
+    background-color: #f4f6fa !important;
+}
+[data-testid="stHeader"] {
+    background: #f4f6fa !important;
+}
+[data-testid="stToolbar"] { display: none !important; }
+#MainMenu, footer { visibility: hidden !important; }
+
+body, .stApp {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-[data-testid="stDecoration"],
-[data-testid="stHeader"],
-footer { display: none !important; }
-
-[data-testid="block-container"] {
-  padding: 0 2rem 4rem !important;
-  max-width: 1400px !important;
+/* ─── Hero Banner ──────────────────────────────────────────────────────────── */
+.hero-banner {
+    background: linear-gradient(135deg, #0f0c29 0%, #1e1b4b 50%, #312e81 100%);
+    border-radius: 18px;
+    padding: 26px 30px;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    box-shadow: 0 8px 28px rgba(30, 27, 75, 0.28);
+    position: relative;
+    overflow: hidden;
+}
+.hero-banner::before {
+    content: "";
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.08) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+.hero-title {
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 1.7rem !important;
+    line-height: 1.25 !important;
+    margin: 0 0 4px 0 !important;
+    color: #fde047 !important;
+    letter-spacing: -0.3px !important;
+}
+.hero-sub {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.93rem !important;
+    font-weight: 400 !important;
+    color: #e0e7ff !important;
+    margin: 0 !important;
 }
 
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 999px; }
-
-/* ── HEADER ── */
-.app-header {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  padding: 26px 32px;
-  margin: 24px 0 28px;
-  background: linear-gradient(135deg, rgba(56,189,248,0.05) 0%, rgba(167,139,250,0.03) 100%);
-  border: 1px solid var(--border);
-  border-top: 1px solid rgba(56,189,248,0.15);
-  border-radius: var(--radius-xl);
-  box-shadow: 0 1px 0 rgba(255,255,255,0.03) inset, 0 20px 60px rgba(0,0,0,0.45);
+/* ─── Section Badge ────────────────────────────────────────────────────────── */
+.section-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #e2e6ef;
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: #1e1b4b;
+    letter-spacing: 0.3px;
+    margin-bottom: 18px;
 }
 
-.app-header-logo {
-  flex-shrink: 0;
-  width: 60px; height: 60px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border);
-  background: var(--surface-2);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.8rem;
-  overflow: hidden;
+/* ─── Parameter Card ───────────────────────────────────────────────────────── */
+.param-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 26px 28px 18px 28px;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
-.app-header-logo img {
-  width: 100%; height: 100%;
-  object-fit: contain; padding: 6px;
+[data-testid="stNumberInput"] label p {
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 500 !important;
+    font-size: 0.92rem !important;
+    color: #1e293b !important;
 }
 
-.app-title {
-  font-size: 1.65rem;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  background: linear-gradient(90deg, var(--blue) 0%, var(--purple) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  line-height: 1.2;
+/* ─── Button ───────────────────────────────────────────────────────────────── */
+.stButton > button {
+    width: 100% !important;
+    background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 100%) !important;
+    color: #ffffff !important;
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+    letter-spacing: 0.8px !important;
+    text-transform: uppercase !important;
+    border: none !important;
+    border-radius: 11px !important;
+    padding: 11px 0 !important;
+    margin-top: 6px !important;
+    box-shadow: 0 4px 14px rgba(67, 56, 202, 0.22) !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+.stButton > button:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 20px rgba(67, 56, 202, 0.32) !important;
+    background: linear-gradient(135deg, #312e81 0%, #4f46e5 100%) !important;
 }
 
-.app-subtitle {
-  font-size: 0.78rem;
-  color: var(--text-muted);
-  margin-top: 5px;
-  font-weight: 400;
-  letter-spacing: 0.02em;
+/* ─── Result Cards ─────────────────────────────────────────────────────────── */
+.result-card {
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+.result-card.fuerza {
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    border: 1.5px solid #93c5fd;
+}
+.result-card.atraccion {
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    border: 1.5px solid #86efac;
+}
+.result-card.repulsion {
+    background: linear-gradient(135deg, #fff7ed, #fee2e2);
+    border: 1.5px solid #fca5a5;
+}
+.result-icon {
+    font-size: 1.8rem;
+    flex-shrink: 0;
+}
+.result-label {
+    font-size: 0.78rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: #475569;
+    margin-bottom: 3px;
+    font-family: 'Inter', sans-serif;
+}
+.result-value {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: #1e3a8a;
+    line-height: 1.1;
+}
+.result-value.green { color: #166534; }
+.result-value.red { color: #991b1b; }
+
+/* ─── Divider ──────────────────────────────────────────────────────────────── */
+.fancy-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #cbd5e1 25%, #cbd5e1 75%, transparent);
+    border: none;
+    margin: 26px 0;
 }
 
-.app-badges {
-  margin-left: auto;
-  display: flex; gap: 8px;
+/* ─── Formula Grid ─────────────────────────────────────────────────────────── */
+.formula-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 6px;
+}
+.formula-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 22px 16px 18px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+.formula-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+.formula-title {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #475569;
+    margin-bottom: 10px;
+    font-family: 'Inter', sans-serif;
+}
+.formula-desc {
+    font-size: 0.72rem;
+    color: #94a3b8;
+    margin-top: 6px;
+    font-family: 'Inter', sans-serif;
+    font-style: italic;
+}
+.formula-equation {
+    min-height: 2.8em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.badge {
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  padding: 4px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  color: var(--text-muted);
-  background: var(--surface-2);
+/* ─── Values Box ──────────────────────────────────────────────────────────── */
+.values-box {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 14px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    color: #1e293b;
+    margin-top: 20px;
+    line-height: 1.9;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
 }
 
-.badge.live {
-  border-color: rgba(56,189,248,0.3);
-  color: var(--blue);
-  background: var(--blue-dim);
+/* ─── Plot Container ───────────────────────────────────────────────────────── */
+[data-testid="stPlot"],
+.stPlot {
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    background: #ffffff;
+    padding: 6px;
 }
 
-/* ── INFO ROW ── */
-.info-row {
-  display: flex; gap: 10px; flex-wrap: wrap;
-  margin: 0 0 24px;
+/* ─── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .hero-banner {
+        flex-direction: column;
+        text-align: center;
+        padding: 22px 18px;
+    }
+    .hero-title {
+        font-size: 1.35rem !important;
+    }
+    .hero-sub {
+        font-size: 0.82rem !important;
+    }
+    .param-card {
+        padding: 18px 14px 14px 14px;
+    }
+    .result-card {
+        padding: 14px 16px;
+    }
+    .result-value {
+        font-size: 1.25rem;
+    }
+    .formula-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
 }
 
-.info-chip {
-  font-size: 0.72rem;
-  font-weight: 500;
-  color: var(--text-muted);
-  background: var(--surface-1);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 5px 13px;
-  font-family: var(--mono);
+@media (max-width: 520px) {
+    .formula-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
-.info-chip b { color: var(--text); }
-
-/* ── SECTION LABEL ── */
-.section-label {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 28px 0 14px;
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-  color: var(--text-muted);
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 1.15rem !important;
+    }
+    .result-value {
+        font-size: 1.1rem;
+    }
+    .result-label {
+        font-size: 0.7rem;
+    }
 }
 
-.section-label::before {
-  content: '';
-  display: block;
-  width: 3px; height: 13px;
-  border-radius: 2px;
-  background: linear-gradient(180deg, var(--blue), var(--purple));
-}
-
-.section-label::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-}
-
-/* ── FORMULA PILL ── */
-.formula-pill {
-  font-family: var(--mono);
-  font-size: 0.76rem;
-  color: var(--blue);
-  background: var(--blue-dim);
-  border: 1px solid rgba(56,189,248,0.2);
-  border-radius: 999px;
-  padding: 6px 14px;
-  display: inline-block;
-  margin-top: 28px;
-}
-
-/* ── CHARGE CARDS ── */
-.charge-card {
-  background: var(--surface-1);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 16px 18px 10px;
-  margin-bottom: 12px;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.charge-card:hover {
-  border-color: rgba(255,255,255,0.11);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-}
-
-.charge-header {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  margin-bottom: 12px;
-}
-
-.charge-dot {
-  width: 9px; height: 9px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.charge-name {
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-}
-
-.charge-idx {
-  margin-left: auto;
-  font-family: var(--mono);
-  font-size: 0.7rem;
-  color: var(--text-faint);
-}
-
-.input-row-labels {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 3px;
-}
-
-.input-col-label {
-  font-size: 0.64rem;
-  font-weight: 600;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  color: var(--text-faint);
-  padding-left: 2px;
-}
-
-/* ── STREAMLIT INPUT OVERRIDES ── */
-div[data-testid="stNumberInput"] label,
-div[data-testid="stSelectbox"] label {
-  font-size: 0.68rem !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.09em !important;
-  text-transform: uppercase !important;
-  color: var(--text-faint) !important;
-  font-family: var(--sans) !important;
-}
-
-div[data-testid="stNumberInput"] input {
-  background: var(--surface-2) !important;
-  border: 1px solid var(--border) !important;
-  border-radius: var(--radius-sm) !important;
-  color: var(--text) !important;
-  font-family: var(--mono) !important;
-  font-size: 0.88rem !important;
-  font-weight: 500 !important;
-  padding: 8px 10px !important;
-  transition: border-color 0.15s, box-shadow 0.15s !important;
-}
-
-div[data-testid="stNumberInput"] input:focus {
-  border-color: var(--border-glow) !important;
-  box-shadow: 0 0 0 3px rgba(56,189,248,0.08) !important;
-  outline: none !important;
-}
-
-div[data-testid="stNumberInput"] button {
-  background: var(--surface-3) !important;
-  border: 1px solid var(--border) !important;
-  color: var(--text-muted) !important;
-  border-radius: 6px !important;
-}
-
-div[data-testid="stNumberInput"] button:hover {
-  background: var(--blue-dim) !important;
-  border-color: var(--border-glow) !important;
-  color: var(--blue) !important;
-}
-
-div[data-testid="stSelectbox"] div[data-baseweb="select"] > div {
-  background: var(--surface-2) !important;
-  border: 1px solid var(--border) !important;
-  border-radius: var(--radius-sm) !important;
-  color: var(--text) !important;
-  font-family: var(--mono) !important;
-  font-size: 0.88rem !important;
-  min-height: 40px !important;
-}
-
-div[data-testid="stSelectbox"] div[data-baseweb="select"] > div:hover {
-  border-color: var(--border-glow) !important;
-}
-
-[data-baseweb="popover"] ul {
-  background: var(--surface-2) !important;
-  border: 1px solid var(--border) !important;
-  border-radius: var(--radius-md) !important;
-  padding: 4px !important;
-}
-
-[data-baseweb="popover"] li {
-  border-radius: var(--radius-sm) !important;
-  font-family: var(--mono) !important;
-  font-size: 0.85rem !important;
-  color: var(--text) !important;
-}
-
-[data-baseweb="popover"] li:hover {
-  background: var(--blue-dim) !important;
-  color: var(--blue) !important;
-}
-
-/* ── BUTTON ── */
-div[data-testid="stButton"] > button {
-  width: 100% !important;
-  padding: 14px 28px !important;
-  font-family: var(--sans) !important;
-  font-size: 0.85rem !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.07em !important;
-  text-transform: uppercase !important;
-  color: #fff !important;
-  background: linear-gradient(135deg, #0ea5e9 0%, #7c3aed 100%) !important;
-  border: none !important;
-  border-radius: var(--radius-md) !important;
-  cursor: pointer !important;
-  box-shadow: 0 1px 0 rgba(255,255,255,0.12) inset,
-              0 6px 20px rgba(14,165,233,0.18) !important;
-  transition: transform 0.15s, box-shadow 0.15s !important;
-}
-
-div[data-testid="stButton"] > button:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 1px 0 rgba(255,255,255,0.15) inset,
-              0 10px 30px rgba(14,165,233,0.32) !important;
-}
-
-div[data-testid="stButton"] > button:active {
-  transform: translateY(0) !important;
-  opacity: 0.9 !important;
-}
-
-/* ── TABS ── */
-.stTabs [data-baseweb="tab-list"] {
-  background: var(--surface-1) !important;
-  border: 1px solid var(--border) !important;
-  border-radius: var(--radius-md) !important;
-  padding: 4px !important;
-  gap: 2px !important;
-}
-
-.stTabs [role="tablist"] button {
-  background: transparent !important;
-  border: none !important;
-  border-radius: calc(var(--radius-md) - 4px) !important;
-  color: var(--text-muted) !important;
-  font-family: var(--sans) !important;
-  font-size: 0.76rem !important;
-  font-weight: 500 !important;
-  letter-spacing: 0.04em !important;
-  padding: 8px 18px !important;
-  transition: all 0.15s !important;
-}
-
-.stTabs [role="tablist"] button[aria-selected="true"] {
-  background: var(--surface-3) !important;
-  color: var(--text) !important;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
-}
-
-.stTabs [role="tablist"] button:hover {
-  color: var(--text) !important;
-  background: rgba(255,255,255,0.04) !important;
-}
-
-.stTabs [data-baseweb="tab-panel"] { padding-top: 20px !important; }
-
-/* ── RESULT CARDS ── */
-.result-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 12px;
-}
-
-.rcard {
-  background: var(--surface-1);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 18px 20px;
-  transition: border-color 0.2s;
-}
-
-.rcard:hover { border-color: rgba(255,255,255,0.1); }
-
-.rcard.net-force {
-  border-top: 2px solid var(--blue);
-  background: linear-gradient(180deg, rgba(56,189,248,0.04) 0%, var(--surface-1) 100%);
-}
-
-.rcard-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-
-.rcard-title {
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
-
-.rcard-badge {
-  font-size: 0.63rem;
-  font-weight: 600;
-  padding: 3px 8px;
-  border-radius: 999px;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.rcard-badge.attract {
-  background: rgba(52,211,153,0.1);
-  color: var(--green);
-  border: 1px solid rgba(52,211,153,0.2);
-}
-
-.rcard-badge.repel {
-  background: rgba(248,113,113,0.1);
-  color: var(--red);
-  border: 1px solid rgba(248,113,113,0.2);
-}
-
-.rcard-value {
-  font-family: var(--mono);
-  font-size: 1.45rem;
-  font-weight: 600;
-  color: var(--text);
-  letter-spacing: -0.02em;
-  margin-bottom: 12px;
-}
-
-.rcard-value span {
-  font-size: 0.78rem;
-  font-weight: 400;
-  color: var(--text-muted);
-  margin-left: 4px;
-}
-
-.rcard-meta { display: flex; flex-direction: column; gap: 5px; }
-
-.rcard-row { display: flex; justify-content: space-between; font-size: 0.74rem; }
-.rcard-row .lbl { color: var(--text-muted); }
-.rcard-row .val { font-family: var(--mono); color: var(--text); font-weight: 500; }
-
-/* ── CHART WRAPPER ── */
-.chart-wrap {
-  background: var(--surface-1);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 4px;
-  overflow: hidden;
-}
-
-.chart-label {
-  font-size: 0.67rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  padding: 12px 16px 4px;
-}
-
-/* ── ERROR ── */
-div[data-testid="stAlert"] {
-  background: rgba(248,113,113,0.06) !important;
-  border: 1px solid rgba(248,113,113,0.22) !important;
-  border-radius: var(--radius-md) !important;
-  color: var(--red) !important;
-  font-size: 0.84rem !important;
-}
-
-/* ── FOOTER ── */
-.app-footer {
-  text-align: center;
-  padding: 28px 0 6px;
-  font-size: 0.7rem;
-  color: var(--text-faint);
-  letter-spacing: 0.04em;
-  border-top: 1px solid var(--border);
-  margin-top: 48px;
+/* ─── Smooth Transitions ───────────────────────────────────────────────────── */
+* {
+    transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# ─────────────────────────────────────────────
-# LOGO
-# ─────────────────────────────────────────────
-logo_base64 = None
-if os.path.exists("logo.png"):
-    with open("logo.png", "rb") as f:
-        logo_base64 = base64.b64encode(f.read()).decode()
-
-# ─────────────────────────────────────────────
-# HEADER
-# ─────────────────────────────────────────────
-logo_html = f'<img src="data:image/png;base64,{logo_base64}" alt="logo">' if logo_base64 else "⚡"
-
+# ─── Hero Banner ──────────────────────────────────────────────────────────────
 st.markdown(f"""
-<div class="app-header">
-  <div class="app-header-logo">{logo_html}</div>
-  <div>
-    <div class="app-title">ElectroSim · Coulomb Lab</div>
-    <div class="app-subtitle">Simulación interactiva · Ley de Coulomb · Análisis vectorial 2D</div>
-  </div>
-  <div class="app-badges">
-    <span class="badge live">Live</span>
-    <span class="badge">v2.0</span>
-  </div>
+<div class="hero-banner">
+    {logo_html}
+    <div>
+        <div class="hero-title">Simulador de Fuerza Eléctrica</div>
+        <p class="hero-sub">Ley de Coulomb &nbsp;·&nbsp; Cálculo y visualización vectorial de fuerzas electrostáticas</p>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
-# ─────────────────────────────────────────────
-# CONSTANTS
-# ─────────────────────────────────────────────
-K = 8.99e9
-st.markdown("""
-<div class="info-row">
-  <span class="info-chip"><b>Ke</b> = 8.99 × 10⁹ N·m²/C²</span>
-  <span class="info-chip"><b>F</b> = Ke · |q₁ · q₂| / r²</span>
-  <span class="info-chip">Coordenadas en <b>metros</b> · Cargas en <b>µC</b></span>
-</div>
-""", unsafe_allow_html=True)
+# ─── Parámetros de Entrada ────────────────────────────────────────────────────
+st.markdown('<div class="section-badge">⚙️ &nbsp; Parámetros de entrada</div>', unsafe_allow_html=True)
+st.markdown('<div class="param-card">', unsafe_allow_html=True)
 
-# ─────────────────────────────────────────────
-# CHARGE SELECTOR
-# ─────────────────────────────────────────────
-st.markdown('<div class="section-label">Configuración del sistema</div>', unsafe_allow_html=True)
+col1, col2 = st.columns(2)
+with col1:
+    q1_micro = st.number_input("⊕  Carga 1 (µC)", value=5.0, step=0.5)
+with col2:
+    q2_micro = st.number_input("⊖  Carga 2 (µC)", value=-3.0, step=0.5)
 
-col_sel, col_pill, _ = st.columns([0.18, 0.38, 0.44], gap="medium")
-with col_sel:
-    num_cargas = st.selectbox("Número de cargas", [2, 3, 4, 5, 6], index=0)
-with col_pill:
-    st.markdown(f'<span class="formula-pill">F = Ke·|q₁q₂|/r²&nbsp; · &nbsp;{num_cargas} cargas activas</span>', unsafe_allow_html=True)
+r = st.number_input("📏  Distancia entre las cargas (metros)", min_value=0.01, value=2.0, step=0.1)
+st.markdown('</div>', unsafe_allow_html=True)
 
-# ─────────────────────────────────────────────
-# PALETTE
-# ─────────────────────────────────────────────
-COLORS = ['#38bdf8', '#a78bfa', '#f87171', '#fbbf24', '#34d399', '#f472b6']
-NAMES  = ['Cian',   'Violeta', 'Rojo',    'Ámbar',   'Esmeralda','Rosa']
-Q_DEF  = [5.0, -3.0, 2.5, -4.0, 3.5, -2.0]
-X_DEF  = [0.0,  3.0, 1.5,  4.0, 2.0,  5.0]
-Y_DEF  = [0.0,  0.0, 2.5,  1.5,-2.0,  3.0]
+calcular = st.button("⚡  Calcular y visualizar")
 
-# ─────────────────────────────────────────────
-# CHARGE INPUTS
-# ─────────────────────────────────────────────
-st.markdown('<div class="section-label">Parámetros de cargas</div>', unsafe_allow_html=True)
-
-cargas = []
-col_a, col_b = st.columns(2, gap="medium")
-
-for i in range(num_cargas):
-    target = col_a if i % 2 == 0 else col_b
-    with target:
-        c = COLORS[i]
-        st.markdown(f"""
-        <div class="charge-card">
-          <div class="charge-header">
-            <span class="charge-dot" style="background:{c}; box-shadow:0 0 6px {c}66;"></span>
-            <span class="charge-name" style="color:{c}bb;">{NAMES[i]}</span>
-            <span class="charge-idx">Q{i+1}</span>
-          </div>
-          <div class="input-row-labels">
-            <span class="input-col-label">Carga (µC)</span>
-            <span class="input-col-label">X (m)</span>
-            <span class="input-col-label">Y (m)</span>
-          </div>
-        </div>
-        """, unsafe_allow_html=True)
-        c1, c2, c3 = st.columns(3, gap="small")
-        with c1:
-            q = st.number_input("q", value=float(Q_DEF[i]), step=0.1, key=f"q{i}", label_visibility="collapsed")
-        with c2:
-            x = st.number_input("x", value=float(X_DEF[i]), step=0.1, key=f"x{i}", label_visibility="collapsed")
-        with c3:
-            y = st.number_input("y", value=float(Y_DEF[i]), step=0.1, key=f"y{i}", label_visibility="collapsed")
-        cargas.append({'q': q, 'x': x, 'y': y, 'indice': i+1, 'color': c})
-
-# ─────────────────────────────────────────────
-# BUTTON
-# ─────────────────────────────────────────────
-st.markdown('<div style="height:10px;"></div>', unsafe_allow_html=True)
-_, btn_col, _ = st.columns([0.25, 0.5, 0.25])
-with btn_col:
-    calcular = st.button("⚡  Calcular simulación", use_container_width=True)
-
-# ─────────────────────────────────────────────
-# PHYSICS ENGINE (lógica matemática sin cambios)
-# ─────────────────────────────────────────────
-cargas_coulombs = [{'q': c['q'] * 1e-6, 'x': c['x'], 'y': c['y'],
-                    'indice': c['indice'], 'color': c['color']} for c in cargas]
-
+# ─── Resultados ───────────────────────────────────────────────────────────────
 if calcular:
-    # Validación
-    posiciones = [(c['x'], c['y']) for c in cargas]
-    if len(posiciones) != len(set(posiciones)):
-        st.error("Error: Dos o más cargas ocupan la misma posición.")
-        st.stop()
+    q1 = q1_micro * 1e-6
+    q2 = q2_micro * 1e-6
+    fuerza = K * abs(q1 * q2) / r ** 2
 
-    # Pares
-    pares_info = []
-    for i in range(len(cargas_coulombs)):
-        for j in range(i + 1, len(cargas_coulombs)):
-            c1, c2 = cargas_coulombs[i], cargas_coulombs[j]
-            dx = c2['x'] - c1['x']
-            dy = c2['y'] - c1['y']
-            r = math.sqrt(dx**2 + dy**2)
-            if r < 0.01:
-                st.error(f"Error: Cargas {c1['indice']} y {c2['indice']} están demasiado cerca.")
-                st.stop()
-            theta_rad = math.atan2(dy, dx)
-            theta_deg = math.degrees(theta_rad)
-            F = K * abs(c1['q'] * c2['q']) / (r**2)
-            Fx = F * math.cos(theta_rad)
-            Fy = F * math.sin(theta_rad)
-            tipo = "Atracción" if (c1['q'] * c2['q']) < 0 else "Repulsión"
-            pares_info.append({
-                'i': c1['indice'], 'j': c2['indice'],
-                'q1': cargas[i]['q'], 'q2': cargas[j]['q'],
-                'r': r, 'theta': theta_deg, 'F': F, 'Fx': Fx, 'Fy': Fy,
-                'tipo': tipo, 'atraccion': (c1['q'] * c2['q']) < 0
-            })
+    if (q1 * q2) < 0:
+        tipo = "Atracción"
+        mpl_color = "#059669"
+        card_tipo = "atraccion"
+        icono_tipo = "🟢"
+        val_class = "green"
+        dir_vector = -1
+    else:
+        tipo = "Repulsión"
+        mpl_color = "#dc2626"
+        card_tipo = "repulsion"
+        icono_tipo = "🔴"
+        val_class = "red"
+        dir_vector = 1
 
-    # Fuerzas netas
-    fuerzas_netas = []
-    for i in range(len(cargas_coulombs)):
-        Fx_neto = Fy_neto = 0.0
-        for j in range(len(cargas_coulombs)):
-            if i == j: continue
-            co, cd = cargas_coulombs[i], cargas_coulombs[j]
-            dx = cd['x'] - co['x']
-            dy = cd['y'] - co['y']
-            r = math.sqrt(dx**2 + dy**2)
-            theta_rad = math.atan2(dy, dx)
-            F = K * abs(co['q'] * cd['q']) / (r**2)
-            if (co['q'] * cd['q']) < 0:
-                Fx, Fy = F * math.cos(theta_rad), F * math.sin(theta_rad)
-            else:
-                Fx, Fy = -F * math.cos(theta_rad), -F * math.sin(theta_rad)
-            Fx_neto += Fx
-            Fy_neto += Fy
-        F_neto = math.sqrt(Fx_neto**2 + Fy_neto**2)
-        theta_neto = math.degrees(math.atan2(Fy_neto, Fx_neto))
-        fuerzas_netas.append({
-            'indice': i+1, 'Fx': Fx_neto, 'Fy': Fy_neto,
-            'F': F_neto, 'theta': theta_neto, 'color': cargas[i]['color']
-        })
+    st.markdown('<hr class="fancy-divider">', unsafe_allow_html=True)
+    st.markdown('<div class="section-badge">📊 &nbsp; Resultados analíticos</div>', unsafe_allow_html=True)
 
-    # ─────────────────────────────────────────
-    # RESULTS
-    # ─────────────────────────────────────────
-    st.markdown('<div class="section-label">Análisis de resultados</div>', unsafe_allow_html=True)
-    tab1, tab2, tab3 = st.tabs(["Fuerzas entre pares", "Fuerza neta por carga", "Visualización 2D"])
+    col_a, col_b = st.columns(2)
+    with col_a:
+        st.markdown(f"""
+        <div class="result-card fuerza">
+            <div class="result-icon">🔬</div>
+            <div>
+                <div class="result-label">Magnitud de la fuerza</div>
+                <div class="result-value">{fuerza:.4f} N</div>
+            </div>
+        </div>""", unsafe_allow_html=True)
+    with col_b:
+        st.markdown(f"""
+        <div class="result-card {card_tipo}">
+            <div class="result-icon">{icono_tipo}</div>
+            <div>
+                <div class="result-label">Tipo de interacción</div>
+                <div class="result-value {val_class}">{tipo}</div>
+            </div>
+        </div>""", unsafe_allow_html=True)
 
-    with tab1:
-        html = '<div class="result-grid">'
-        for par in pares_info:
-            bc = "attract" if par['atraccion'] else "repel"
-            bt = "Atracción" if par['atraccion'] else "Repulsión"
-            html += f"""
-            <div class="rcard">
-              <div class="rcard-header">
-                <span class="rcard-title">Q{par['i']} ↔ Q{par['j']}</span>
-                <span class="rcard-badge {bc}">{bt}</span>
-              </div>
-              <div class="rcard-value">{par['F']:.4f}<span>N</span></div>
-              <div class="rcard-meta">
-                <div class="rcard-row"><span class="lbl">q₁</span><span class="val">{par['q1']:+.2f} µC</span></div>
-                <div class="rcard-row"><span class="lbl">q₂</span><span class="val">{par['q2']:+.2f} µC</span></div>
-                <div class="rcard-row"><span class="lbl">r</span><span class="val">{par['r']:.4f} m</span></div>
-                <div class="rcard-row"><span class="lbl">θ</span><span class="val">{par['theta']:.2f}°</span></div>
-                <div class="rcard-row"><span class="lbl">Fx</span><span class="val">{par['Fx']:+.4f} N</span></div>
-                <div class="rcard-row"><span class="lbl">Fy</span><span class="val">{par['Fy']:+.4f} N</span></div>
-              </div>
-            </div>"""
-        html += '</div>'
-        st.markdown(html, unsafe_allow_html=True)
+    st.markdown('<hr class="fancy-divider">', unsafe_allow_html=True)
+    st.markdown('<div class="section-badge">🎨 &nbsp; Representación vectorial</div>', unsafe_allow_html=True)
 
-    with tab2:
-        html = '<div class="result-grid">'
-        for fn in fuerzas_netas:
-            html += f"""
-            <div class="rcard net-force">
-              <div class="rcard-header">
-                <span class="rcard-title" style="color:{fn['color']}99;">Q{fn['indice']}</span>
-                <span class="rcard-badge attract">Neta</span>
-              </div>
-              <div class="rcard-value">{fn['F']:.4f}<span>N</span></div>
-              <div class="rcard-meta">
-                <div class="rcard-row"><span class="lbl">Fx neto</span><span class="val">{fn['Fx']:+.4f} N</span></div>
-                <div class="rcard-row"><span class="lbl">Fy neto</span><span class="val">{fn['Fy']:+.4f} N</span></div>
-                <div class="rcard-row"><span class="lbl">θ resultante</span><span class="val">{fn['theta']:.2f}°</span></div>
-              </div>
-            </div>"""
-        html += '</div>'
-        st.markdown(html, unsafe_allow_html=True)
+    fig, ax = plt.subplots(figsize=(9, 4.0))
+    fig.patch.set_facecolor('#ffffff')
+    ax.set_facecolor('#ffffff')
 
-    with tab3:
-        col_g1, col_g2 = st.columns(2, gap="medium")
+    c_colors = [
+        '#ef4444' if q1 > 0 else '#3b82f6',
+        '#ef4444' if q2 > 0 else '#3b82f6'
+    ]
 
-        # Gráfica 1: Sistema de cargas
-        with col_g1:
-            st.markdown('<div class="chart-wrap"><div class="chart-label">Sistema de cargas · Vectores de fuerza neta</div>', unsafe_allow_html=True)
-            fig1, ax1 = plt.subplots(figsize=(7, 7))
-            fig1.patch.set_facecolor('#080c14')
-            ax1.set_facecolor('#0d1220')
+    ax.plot([0, r], [0, 0], color='#94a3b8', linestyle='--', linewidth=1.5, alpha=0.5, zorder=1)
+    ax.annotate('', xy=(r, -0.3), xytext=(0, -0.3),
+                arrowprops=dict(arrowstyle='<->', color='#64748b', lw=1.3))
+    ax.text(r / 2, -0.42, f'd = {r} m', ha='center', fontsize=9,
+            color='#64748b', style='italic', fontfamily='monospace')
 
-            xs = [c['x'] for c in cargas_coulombs]
-            ys = [c['y'] for c in cargas_coulombs]
-            margin = 2.5
-            xc = (min(xs) + max(xs)) / 2
-            yc = (min(ys) + max(ys)) / 2
-            half = max(max(xs)-min(xs), max(ys)-min(ys)) / 2 + margin
-            ax1.set_xlim(xc - half, xc + half)
-            ax1.set_ylim(yc - half, yc + half)
-            ax1.set_aspect('equal')
+    ax.scatter([0, r], [0, 0], s=1000, c=c_colors, edgecolors='white', linewidths=3, zorder=3)
+    ax.text(0, 0, '+' if q1 > 0 else '−', ha='center', va='center',
+            fontsize=14, fontweight='bold', color='white', zorder=4)
+    ax.text(r, 0, '+' if q2 > 0 else '−', ha='center', va='center',
+            fontsize=14, fontweight='bold', color='white', zorder=4)
 
-            ax1.grid(True, color='#1a2236', linewidth=0.8, alpha=0.9)
-            ax1.axhline(0, color='#1e3a5f', linewidth=1.2)
-            ax1.axvline(0, color='#1e3a5f', linewidth=1.2)
+    sign1 = '+' if q1_micro >= 0 else ''
+    sign2 = '+' if q2_micro >= 0 else ''
+    ax.text(0, 0.25, f'q₁ = {sign1}{q1_micro} µC', ha='center',
+            fontsize=10, fontweight='bold', color=c_colors[0])
+    ax.text(r, 0.25, f'q₂ = {sign2}{q2_micro} µC', ha='center',
+            fontsize=10, fontweight='bold', color=c_colors[1])
 
-            for p in pares_info:
-                ci = cargas_coulombs[p['i']-1]
-                cj = cargas_coulombs[p['j']-1]
-                ls = '--' if p['atraccion'] else ':'
-                ax1.plot([ci['x'], cj['x']], [ci['y'], cj['y']],
-                         color='#1e3a5f', linewidth=0.9, linestyle=ls, alpha=0.6, zorder=1)
+    escala = r * 0.24
+    ax.annotate('', xy=(-dir_vector * escala, 0), xytext=(0, 0),
+                arrowprops=dict(arrowstyle='->', color=mpl_color, lw=2.5, mutation_scale=20))
+    ax.text(-dir_vector * (escala + 0.08 * r), -0.25,
+            'F₁', ha='center', color=mpl_color, fontsize=11, fontweight='bold')
+    ax.annotate('', xy=(r + dir_vector * escala, 0), xytext=(r, 0),
+                arrowprops=dict(arrowstyle='->', color=mpl_color, lw=2.5, mutation_scale=20))
+    ax.text(r + dir_vector * (escala + 0.08 * r), -0.25,
+            'F₂', ha='center', color=mpl_color, fontsize=11, fontweight='bold')
 
-            for c, fn in zip(cargas_coulombs, fuerzas_netas):
-                col = fn['color']
-                ax1.scatter(c['x'], c['y'], s=210, color=col, zorder=4,
-                            edgecolors='white', linewidths=1.5, alpha=0.95)
-                signo = '+' if c['q'] > 0 else '−'
-                ax1.text(c['x'], c['y'], signo, ha='center', va='center',
-                         color='white', fontsize=12, fontweight='bold', zorder=5)
-                ax1.text(c['x'], c['y'] - half * 0.12,
-                         f"Q{c['indice']}  {cargas[c['indice']-1]['q']:.1f}µC",
-                         ha='center', va='top', fontsize=7.5, color=col,
-                         fontfamily='monospace',
-                         bbox=dict(boxstyle='round,pad=0.3', facecolor='#080c14',
-                                   edgecolor=col+'55', linewidth=1, alpha=0.9), zorder=5)
-                if fn['F'] > 1e-6:
-                    scale = half * 0.3
-                    fx_v = (fn['Fx'] / fn['F']) * scale
-                    fy_v = (fn['Fy'] / fn['F']) * scale
-                    ax1.annotate('', xy=(c['x']+fx_v, c['y']+fy_v),
-                                 xytext=(c['x'], c['y']),
-                                 arrowprops=dict(arrowstyle='->', color=col, lw=2.5, mutation_scale=15),
-                                 zorder=3)
+    patches = [
+        mpatches.Patch(color='#ef4444', label='Carga positiva (+)'),
+        mpatches.Patch(color='#3b82f6', label='Carga negativa (−)'),
+        mpatches.Patch(color=mpl_color, label=f'Fuerza de {tipo.lower()}'),
+    ]
 
-            ax1.set_xlabel('X (m)', fontsize=8.5, color='#475569', fontfamily='monospace')
-            ax1.set_ylabel('Y (m)', fontsize=8.5, color='#475569', fontfamily='monospace')
-            ax1.tick_params(colors='#334155', labelsize=8)
-            ax1.spines[:].set_color('#1a2236')
-            plt.tight_layout(pad=1.2)
-            st.pyplot(fig1, use_container_width=True)
-            plt.close(fig1)
-            st.markdown('</div>', unsafe_allow_html=True)
+    ax.legend(
+        handles=patches, loc='lower center', bbox_to_anchor=(0.5, -0.22),
+        ncol=3, fontsize=8.5, framealpha=0.95, edgecolor='#e2e8f0', fancybox=True
+    )
 
-        # Gráfica 2: Descomposición vectorial
-        with col_g2:
-            st.markdown('<div class="chart-wrap"><div class="chart-label">Descomposición vectorial · Primer par</div>', unsafe_allow_html=True)
-            if pares_info:
-                fig2, ax2 = plt.subplots(figsize=(7, 7))
-                fig2.patch.set_facecolor('#080c14')
-                ax2.set_facecolor('#0d1220')
+    ax.set_xlim(-r * 0.55, r * 1.6)
+    ax.set_ylim(-0.75, 0.55)
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+    ax.set_xticks([])
+    ax.set_yticks([])
 
-                par = pares_info[0]
-                F, Fx, Fy = par['F'], par['Fx'], par['Fy']
-                theta_rad = math.radians(par['theta'])
-                max_c = max(abs(Fx), abs(Fy), F, 0.01)
-                norm = 3.5 / max_c
-                fx_n, fy_n = Fx * norm, Fy * norm
-                f_nx = F * norm * math.cos(theta_rad)
-                f_ny = F * norm * math.sin(theta_rad)
+    st.pyplot(fig)
 
-                ax2.set_xlim(-0.8, 5.0)
-                ax2.set_ylim(-0.8, 5.0)
-                ax2.set_aspect('equal')
-                ax2.grid(True, color='#1a2236', linewidth=0.8, alpha=0.9)
+    st.markdown('<hr class="fancy-divider">', unsafe_allow_html=True)
+    st.markdown('<div class="section-badge">📐 &nbsp; Marco teórico</div>', unsafe_allow_html=True)
 
-                for ox, oy, ddx, ddy in [(0,0,4.5,0),(0,0,0,4.5)]:
-                    ax2.annotate('', xy=(ox+ddx, oy+ddy), xytext=(ox,oy),
-                                 arrowprops=dict(arrowstyle='->', color='#1e3a5f', lw=1.5))
-                ax2.text(4.7, -0.18, 'X', fontsize=9, color='#475569', fontfamily='monospace', fontweight='bold')
-                ax2.text(-0.18, 4.7, 'Y', fontsize=9, color='#475569', fontfamily='monospace', fontweight='bold')
+    st.markdown("""
+    <div class="formula-grid">
+        <div class="formula-card">
+            <div class="formula-title">Ley de Coulomb</div>
+            <div class="formula-equation">$$F = k_e \\frac{|q_1 q_2|}{r^2}$$</div>
+            <div class="formula-desc">Magnitud de la fuerza electrostática entre dos cargas puntuales</div>
+        </div>
+        <div class="formula-card">
+            <div class="formula-title">Forma vectorial</div>
+            <div class="formula-equation">$$\\vec{F}_{12} = k_e \\frac{q_1 q_2}{r^2} \\hat{r}_{12}$$</div>
+            <div class="formula-desc">Fuerza como vector en la dirección radial unitaria</div>
+        </div>
+        <div class="formula-card">
+            <div class="formula-title">Campo eléctrico</div>
+            <div class="formula-equation">$$E = k_e \\frac{|q|}{r^2}$$</div>
+            <div class="formula-desc">Magnitud del campo eléctrico generado por una carga puntual</div>
+        </div>
+        <div class="formula-card">
+            <div class="formula-title">Potencial eléctrico</div>
+            <div class="formula-equation">$$V = k_e \\frac{q}{r}$$</div>
+            <div class="formula-desc">Potencial electrostático escalar de una carga puntual</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
-                ax2.plot([fx_n, fx_n], [0, fy_n], color='#334155', linewidth=1.1, linestyle='--', alpha=0.6)
-                ax2.plot([0, fx_n], [fy_n, fy_n], color='#334155', linewidth=1.1, linestyle='--', alpha=0.6)
-
-                ax2.annotate('', xy=(fx_n, 0), xytext=(0,0),
-                             arrowprops=dict(arrowstyle='->', color='#38bdf8', lw=2.5, mutation_scale=14))
-                ax2.annotate('', xy=(fx_n, fy_n), xytext=(fx_n, 0),
-                             arrowprops=dict(arrowstyle='->', color='#f97316', lw=2.5, mutation_scale=14))
-                ax2.annotate('', xy=(f_nx, f_ny), xytext=(0,0),
-                             arrowprops=dict(arrowstyle='->', color='#a78bfa', lw=3, mutation_scale=16))
-
-                if abs(theta_rad) > 0.01:
-                    arc = np.linspace(0, theta_rad, 60)
-                    ax2.plot(0.65*np.cos(arc), 0.65*np.sin(arc), color='#f87171', linewidth=2, alpha=0.8)
-                    mid = theta_rad / 2
-                    ax2.text(0.92*math.cos(mid), 0.92*math.sin(mid),
-                             f'{par["theta"]:.1f}°', fontsize=8, color='#f87171',
-                             fontfamily='monospace', ha='center', va='center')
-
-                ax2.text(fx_n/2, -0.38, f'Fx = {Fx:+.3f} N', ha='center', fontsize=8,
-                         color='#38bdf8', fontfamily='monospace',
-                         bbox=dict(boxstyle='round,pad=0.3', facecolor='#080c14', edgecolor='#38bdf830', linewidth=1))
-                ax2.text(fx_n+0.28, fy_n/2, f'Fy = {Fy:+.3f} N', ha='left', fontsize=8,
-                         color='#f97316', fontfamily='monospace',
-                         bbox=dict(boxstyle='round,pad=0.3', facecolor='#080c14', edgecolor='#f9731630', linewidth=1))
-                ax2.text(f_nx*0.5-0.3, f_ny*0.5+0.22, f'|F| = {F:.3f} N', ha='center', fontsize=8,
-                         color='#a78bfa', fontfamily='monospace',
-                         bbox=dict(boxstyle='round,pad=0.3', facecolor='#080c14', edgecolor='#a78bfa30', linewidth=1))
-
-                legend_items = [
-                    mpatches.Patch(color='#a78bfa', label=f'Q{par["i"]}↔Q{par["j"]}  |F|={F:.4f}N'),
-                    mpatches.Patch(color='#38bdf8', label=f'Fx = {Fx:+.4f} N'),
-                    mpatches.Patch(color='#f97316', label=f'Fy = {Fy:+.4f} N'),
-                ]
-                leg = ax2.legend(handles=legend_items, loc='lower right', fontsize=7.5,
-                                 framealpha=0.85, facecolor='#0d1220', edgecolor='#1a2236',
-                                 labelcolor='#94a3b8')
-                leg.get_frame().set_linewidth(0.8)
-
-                ax2.tick_params(colors='#334155', labelsize=8)
-                ax2.spines[:].set_color('#1a2236')
-                plt.tight_layout(pad=1.2)
-                st.pyplot(fig2, use_container_width=True)
-                plt.close(fig2)
-            st.markdown('</div>', unsafe_allow_html=True)
-
-# ─────────────────────────────────────────────
-# FOOTER
-# ─────────────────────────────────────────────
-st.markdown("""
-<div class="app-footer">
-  ElectroSim · Coulomb Lab &nbsp;·&nbsp; Ley de Coulomb · Física II &nbsp;·&nbsp; UIS
-</div>
-""", unsafe_allow_html=True)
+    st.markdown(f"""
+    <div class="values-box">
+        <b>kₑ</b> = 8.99 × 10⁹ N·m²/C² &nbsp;&nbsp;|&nbsp;&nbsp;
+        <b>q₁</b> = {q1_micro} µC &nbsp;&nbsp;|&nbsp;&nbsp;
+        <b>q₂</b> = {q2_micro} µC &nbsp;&nbsp;|&nbsp;&nbsp;
+        <b>r</b> = {r} m &nbsp;&nbsp;|&nbsp;&nbsp;
+        <b>F</b> = {fuerza:.4f} N
+    </div>
+    """, unsafe_allow_html=True)
