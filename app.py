@@ -1543,32 +1543,36 @@ if calcular:
 
                 # ── Etiqueta Fx (arriba del vector horizontal) ──
                 fx_lab_x = max(fx_n / 2, 0.6)
-                ax2.text(fx_lab_x, 0.35, f'Fx = {Fx:+.3f} N', ha='center', va='bottom',
-                         fontsize=8, color='#0284c7', fontfamily='monospace', fontweight='bold')
+                ax2.text(fx_lab_x, 0.4, f'Fx = {Fx:+.3f} N', ha='center', va='bottom',
+                         fontsize=8, color='#0284c7', fontfamily='monospace', fontweight='bold',
+                         bbox=dict(boxstyle='round,pad=0.15', facecolor='#ffffff',
+                                   edgecolor='#0284c720', linewidth=0.5), zorder=10)
 
                 # ── Etiqueta Fy (a la derecha o izquierda del vector vertical) ──
                 fy_ha = 'left'
-                fy_lab_x = fx_n + 0.35
-                if fy_lab_x > 5.0:
-                    fy_lab_x = fx_n - 0.35
+                fy_lab_x = fx_n + 0.45
+                if fy_lab_x > 5.2:
+                    fy_lab_x = fx_n - 0.45
                     fy_ha = 'right'
                 ax2.text(fy_lab_x, fy_n / 2, f'Fy = {Fy:+.3f} N', ha=fy_ha, va='center',
-                         fontsize=8, color='#ea580c', fontfamily='monospace', fontweight='bold')
+                         fontsize=8, color='#ea580c', fontfamily='monospace', fontweight='bold',
+                         bbox=dict(boxstyle='round,pad=0.15', facecolor='#ffffff',
+                                   edgecolor='#ea580c20', linewidth=0.5), zorder=10)
 
                 # ── Etiqueta F (resultante, desplazada perpendicular) ──
-                perp = 0.5
+                perp = 0.75
                 if f_ny >= 0:
                     ang_p = theta_rad + math.pi / 2
                 else:
                     ang_p = theta_rad - math.pi / 2
-                # Usar offset perpendicular fijo (no proporcional a la longitud)
                 lx = f_nx * 0.5 + perp * math.cos(ang_p)
                 ly = f_ny * 0.5 + perp * math.sin(ang_p)
-                # Asegurar que no se salga del área visible
                 lx = max(-0.5, min(5.5, lx))
                 ly = max(-0.5, min(5.5, ly))
                 ax2.text(lx, ly, f'F = {F:.3f} N', ha='center', va='center',
-                         fontsize=9, color='#7c3aed', fontfamily='monospace', fontweight='bold')
+                         fontsize=9, color='#7c3aed', fontfamily='monospace', fontweight='bold',
+                         bbox=dict(boxstyle='round,pad=0.2', facecolor='#ffffff',
+                                   edgecolor='#7c3aed20', linewidth=0.5), zorder=10)
 
                 # ── Arco del ángulo ──
                 if abs(theta_rad) > 0.01:
@@ -1580,7 +1584,7 @@ if calcular:
                     # Posicionar la etiqueta del ángulo fuera del arco
                     ax2.text(ang_lab_r*math.cos(mid), ang_lab_r*math.sin(mid),
                              f'{theta_deg:.1f}°', fontsize=7.5, color='#dc2626',
-                             fontfamily='monospace', ha='center', va='center')
+                             fontfamily='monospace', ha='center', va='center', zorder=10)
 
                 # ── Leyenda compacta ──
                 legend_items = [
