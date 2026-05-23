@@ -8,6 +8,15 @@ K = 8.99e9
 
 st.set_page_config(page_title="Simulador Ley de Coulomb", layout="wide")
 
+# Intentar cargar logo
+import base64
+import os
+
+logo_base64 = None
+if os.path.exists("logo.png"):
+    with open("logo.png", "rb") as f:
+        logo_base64 = base64.b64encode(f.read()).decode()
+
 # CSS personalizado
 st.markdown("""
 <style>
@@ -273,15 +282,26 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Hero Banner
-st.markdown("""
-<div class="hero-banner">
-    <div class="hero-logo">⚡</div>
-    <div>
-        <div class="hero-title">Proyecto de Simulador de Fuerza Eléctrica</div>
-        <div class="hero-sub">Ley de Coulomb · Cálculo y visualización de fuerzas electrostáticas en sistemas 2D</div>
+if logo_base64:
+    st.markdown(f"""
+    <div class="hero-banner">
+        <img src="data:image/png;base64,{logo_base64}" style="height: 80px; width: auto; border-radius: 10px;">
+        <div>
+            <div class="hero-title">Proyecto de Simulador de Fuerza Eléctrica</div>
+            <div class="hero-sub">Ley de Coulomb · Cálculo y visualización de fuerzas electrostáticas en sistemas 2D</div>
+        </div>
     </div>
-</div>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
+else:
+    st.markdown("""
+    <div class="hero-banner">
+        <div class="hero-logo">⚡</div>
+        <div>
+            <div class="hero-title">Proyecto de Simulador de Fuerza Eléctrica</div>
+            <div class="hero-sub">Ley de Coulomb · Cálculo y visualización de fuerzas electrostáticas en sistemas 2D</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
 # Selector de número de cargas
 st.markdown('<div class="section-header">⚙️ Configuración del Sistema</div>', unsafe_allow_html=True)
@@ -542,8 +562,8 @@ if calcular:
         
         # Grid y ejes
         ax1.grid(True, alpha=0.3, linestyle='--', linewidth=0.8)
-        ax1.axhline(0, color='#94a3b8', linewidth=1.8, alpha=0.8, linestyle='-')
-        ax1.axvline(0, color='#94a3b8', linewidth=1.8, alpha=0.8, linestyle='-')
+        ax1.axhline(0, color='#94a3b8', linewidth=1.8, alpha=0.8)
+        ax1.axvline(0, color='#94a3b8', linewidth=1.8, alpha=0.8)
         
         # Dibujar cargas
         for c, fn in zip(cargas_coulombs, fuerzas_netas):
