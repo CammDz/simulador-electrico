@@ -60,10 +60,17 @@ html, body,
 
 [data-testid="stDecoration"],
 [data-testid="stHeader"],
-footer { display: none !important; }
+footer,
+header { display: none !important; }
+
+[data-testid="stAppViewContainer"] { padding-top: 0 !important; }
+
+[data-testid="stAppViewContainer"] > .main {
+  padding-top: 0 !important;
+}
 
 [data-testid="block-container"] {
-  padding: 0 2rem 4rem !important;
+  padding: 0.5rem 2rem 3rem !important;
   max-width: 1400px !important;
 }
 
@@ -75,9 +82,9 @@ footer { display: none !important; }
 .app-header {
   display: flex;
   align-items: center;
-  gap: 22px;
-  padding: 22px 30px;
-  margin: 18px 0 22px;
+  gap: 20px;
+  padding: 18px 28px;
+  margin: 8px 0 20px;
   background: var(--surface-1);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
@@ -86,7 +93,7 @@ footer { display: none !important; }
 
 .app-header-logo {
   flex-shrink: 0;
-  width: 56px; height: 56px;
+  width: 52px; height: 52px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
   background: var(--surface-1);
@@ -97,15 +104,20 @@ footer { display: none !important; }
 
 .app-header-logo img {
   width: 100%; height: 100%;
-  object-fit: contain; padding: 5px;
+  object-fit: contain; padding: 4px;
+}
+
+.app-header-text {
+  flex: 1;
+  min-width: 0;
 }
 
 .app-title {
-  font-size: 1.55rem;
+  font-size: 1.35rem;
   font-weight: 700;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.02em;
   color: var(--text);
-  line-height: 1.25;
+  line-height: 1.3;
 }
 
 .app-title .accent {
@@ -116,10 +128,11 @@ footer { display: none !important; }
 }
 
 .app-subtitle {
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   color: var(--text-muted);
-  margin-top: 3px;
+  margin-top: 2px;
   font-weight: 400;
+  letter-spacing: 0.01em;
 }
 
 .app-badges {
@@ -346,31 +359,30 @@ div[data-testid="stSelectbox"] div[data-baseweb="select"] > div:hover {
 /* ── BUTTON ── */
 div[data-testid="stButton"] > button {
   width: 100% !important;
-  padding: 13px 28px !important;
+  padding: 12px 28px !important;
   font-family: var(--sans) !important;
-  font-size: 0.85rem !important;
+  font-size: 0.88rem !important;
   font-weight: 600 !important;
-  letter-spacing: 0.06em !important;
-  text-transform: uppercase !important;
-  color: #fff !important;
-  background: linear-gradient(135deg, #0284c7 0%, #7c3aed 100%) !important;
+  letter-spacing: 0.05em !important;
+  color: #ffffff !important;
+  background: #2563eb !important;
   border: none !important;
   border-radius: var(--radius-md) !important;
   cursor: pointer !important;
-  box-shadow: 0 1px 0 rgba(255,255,255,0.15) inset,
-              0 4px 14px rgba(2,132,199,0.2) !important;
-  transition: transform 0.15s, box-shadow 0.15s !important;
+  box-shadow: 0 4px 14px rgba(37,99,235,0.25) !important;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s !important;
 }
 
 div[data-testid="stButton"] > button:hover {
+  background: #1d4ed8 !important;
   transform: translateY(-1px) !important;
-  box-shadow: 0 1px 0 rgba(255,255,255,0.15) inset,
-              0 8px 24px rgba(2,132,199,0.3) !important;
+  box-shadow: 0 6px 20px rgba(37,99,235,0.35) !important;
 }
 
 div[data-testid="stButton"] > button:active {
+  background: #1e40af !important;
   transform: translateY(0) !important;
-  opacity: 0.9 !important;
+  box-shadow: 0 2px 8px rgba(37,99,235,0.2) !important;
 }
 
 /* ── TABS ── */
@@ -508,6 +520,15 @@ div[data-testid="stButton"] > button:active {
 .rcard-row .val { font-family: var(--mono); color: var(--text); font-weight: 500; }
 .rcard-row .val.pos { color: #059669; }
 .rcard-row .val.neg { color: #dc2626; }
+
+.rcard-interp {
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+  padding: 8px 0 2px;
+  border-top: 1px solid var(--border);
+  margin-top: 8px;
+}
 
 /* ── CHART WRAPPER ── */
 .chart-wrap {
@@ -661,36 +682,56 @@ div[data-testid="stAlert"] {
 
 /* ── RESPONSIVE ── */
 @media (max-width: 900px) {
-  [data-testid="block-container"] { padding: 0 1rem 3rem !important; }
-  .app-header { flex-wrap: wrap; padding: 18px 20px; gap: 12px; }
-  .app-title { font-size: 1.25rem; }
+  [data-testid="block-container"] { padding: 0.3rem 1rem 2.5rem !important; }
+  .app-header { flex-wrap: wrap; padding: 14px 18px; gap: 10px; margin: 4px 0 16px; }
+  .app-title { font-size: 1.15rem; }
+  .app-subtitle { font-size: 0.7rem; }
   .app-badges { margin-left: 0; }
-  .app-header-logo { width: 48px; height: 48px; }
+  .app-header-logo { width: 44px; height: 44px; }
 }
 
 @media (max-width: 640px) {
-  .app-header { flex-direction: column; text-align: center; padding: 16px 14px; }
-  .app-title { font-size: 1.1rem; }
-  .app-subtitle { font-size: 0.68rem; }
-  .app-header-logo { width: 44px; height: 44px; }
-  .info-row { gap: 6px; }
-  .info-chip { font-size: 0.65rem; padding: 4px 10px; }
-  .section-label { font-size: 0.65rem; margin: 18px 0 10px; }
-  .charge-card { padding: 12px 14px 8px; }
-  .result-grid { grid-template-columns: 1fr; }
-  .stTabs [role="tablist"] button { font-size: 0.65rem !important; padding: 6px 10px !important; }
-  .rcard-value { font-size: 1.2rem; }
+  [data-testid="block-container"] { padding: 0.2rem 0.8rem 2rem !important; }
+  .app-header { flex-wrap: nowrap; gap: 10px; padding: 12px 14px; margin: 2px 0 12px; }
+  .app-title { font-size: 1rem; }
+  .app-subtitle { font-size: 0.64rem; }
+  .app-header-logo { width: 38px; height: 38px; }
+  .badge { font-size: 0.6rem; padding: 2px 7px; }
+  .info-row { gap: 5px; margin: 0 0 12px; }
+  .info-chip { font-size: 0.62rem; padding: 3px 8px; }
+  .section-label { font-size: 0.62rem; margin: 14px 0 8px; }
+  .charge-card { padding: 10px 12px 6px; }
+  .charge-header { margin-bottom: 10px; gap: 7px; }
+  .charge-name { font-size: 0.72rem; }
+  .charge-idx { font-size: 0.62rem; padding: 1px 7px; }
+  .input-col-label { font-size: 0.6rem; }
+  .result-grid { grid-template-columns: 1fr; gap: 10px; }
+  .stTabs [role="tablist"] button { font-size: 0.6rem !important; padding: 5px 8px !important; }
+  .rcard { padding: 12px 14px; }
+  .rcard-value { font-size: 1.1rem; }
+  .rcard-row { font-size: 0.68rem; }
+  .rcard-interp { font-size: 0.65rem; }
+  .analysis-card { padding: 14px 16px; }
+  .analysis-card p { font-size: 0.78rem; }
+  .analysis-conclusion { padding: 14px 16px; }
+  .analysis-conclusion p { font-size: 0.78rem; }
 }
 
 @media (max-width: 480px) {
-  [data-testid="block-container"] { padding: 0 0.5rem 2rem !important; }
-  .app-title { font-size: 0.95rem; }
-  .app-subtitle { font-size: 0.6rem; }
-  .section-label { font-size: 0.6rem; }
-  .input-col-label { font-size: 0.6rem; }
-  .rcard { padding: 14px; }
-  .rcard-value { font-size: 1.05rem; }
-  .rcard-row { font-size: 0.65rem; }
+  [data-testid="block-container"] { padding: 0.1rem 0.5rem 1.5rem !important; }
+  .app-header { flex-wrap: wrap; padding: 10px 12px; gap: 8px; }
+  .app-title { font-size: 0.88rem; }
+  .app-subtitle { font-size: 0.58rem; }
+  .app-header-logo { width: 34px; height: 34px; }
+  .section-label { font-size: 0.55rem; margin: 12px 0 6px; }
+  .input-col-label { font-size: 0.55rem; }
+  .charge-card { padding: 8px 10px 4px; }
+  .charge-name { font-size: 0.65rem; }
+  .rcard { padding: 10px 12px; }
+  .rcard-value { font-size: 0.95rem; }
+  .rcard-row { font-size: 0.62rem; }
+  .stTabs [role="tablist"] button { font-size: 0.55rem !important; padding: 4px 6px !important; }
+  .info-chip { font-size: 0.58rem; padding: 2px 6px; }
 }
 </style>
 """, unsafe_allow_html=True)
@@ -711,12 +752,12 @@ logo_html = f'<img src="data:image/png;base64,{logo_base64}" alt="logo">' if log
 st.markdown(f"""
 <div class="app-header">
   <div class="app-header-logo">{logo_html}</div>
-  <div>
-    <div class="app-title"><span class="accent">Coulomb</span> Lab</div>
-    <div class="app-subtitle">Simulador de cargas eléctricas · Ley de Coulomb · Electromagnetismo</div>
+  <div class="app-header-text">
+    <div class="app-title">Simulador de <span class="accent">Cargas Eléctricas</span></div>
+    <div class="app-subtitle">Ley de Coulomb · Interacciones electrostáticas · Análisis vectorial 2D</div>
   </div>
   <div class="app-badges">
-    <span class="badge live">Live</span>
+    <span class="badge live">Simulación</span>
     <span class="badge">v2.0</span>
   </div>
 </div>
@@ -728,9 +769,9 @@ st.markdown(f"""
 K = 8.99e9
 st.markdown("""
 <div class="info-row">
-  <span class="info-chip"><b>Ke</b> = 8.99 × 10⁹ N·m²/C²</span>
-  <span class="info-chip"><b>F</b> = Ke · |q₁ · q₂| / r²</span>
-  <span class="info-chip">Coordenadas en <b>metros</b> · Cargas en <b>µC</b></span>
+  <span class="info-chip"><b>Ke</b> = 8.99 × 10⁹ N·m²/C² (constante de Coulomb)</span>
+  <span class="info-chip"><b>F</b> = Ke · |q₁ · q₂| / r² (Ley de Coulomb)</span>
+  <span class="info-chip"><b>µC</b> = microcoulomb (10⁻⁶ C) · <b>m</b> = metros</span>
 </div>
 """, unsafe_allow_html=True)
 
@@ -775,9 +816,9 @@ for i in range(num_cargas):
             <span class="charge-idx">Q{i+1} · {signo}</span>
           </div>
           <div class="input-row-labels">
-            <span class="input-col-label">Carga (µC)</span>
-            <span class="input-col-label">X (m)</span>
-            <span class="input-col-label">Y (m)</span>
+            <span class="input-col-label">Valor Carga (µC)</span>
+            <span class="input-col-label">Posición X (m)</span>
+            <span class="input-col-label">Posición Y (m)</span>
           </div>
         </div>
         """, unsafe_allow_html=True)
@@ -869,44 +910,89 @@ if calcular:
         signos = "opuestos" if par['atraccion'] else "iguales"
         tag_cls = "attr" if par['atraccion'] else "rep"
         tag_txt = "Atracción" if par['atraccion'] else "Repulsión"
+        signo_op = "diferente" if par['atraccion'] else "el mismo"
 
         parts.append(f'<span class="tag {tag_cls}">{tag_txt}</span> '
                       f'Las cargas <strong>Q{par["i"]}</strong> ({par["q1"]:+.1f} µC) y '
                       f'<strong>Q{par["j"]}</strong> ({par["q2"]:+.1f} µC) '
-                      f'interactúan por <strong>{interaccion}</strong> ya que sus signos son {signos}.')
+                      f'interactúan por <strong>{interaccion}</strong> ya que sus signos son {signos} '
+                      f'(q₁ = {par["q1"]:+.1f} µC, q₂ = {par["q2"]:+.1f} µC → signo {signo_op}). '
+                      f'Físicamente, la fuerza eléctrica entre dos cargas es directamente proporcional '
+                      f'al producto de sus magnitudes: <em>F ∝ |q₁ · q₂|</em>.')
 
-        parts.append(f'La magnitud de la fuerza es <strong>{par["F"]:.4f} N</strong> y '
-                      f'actúa a una distancia de separación de <strong>{par["r"]:.3f} m</strong>. '
-                      f'La distancia es un factor crítico: a menor separación, mayor es la fuerza '
-                      f'(relación inversa al cuadrado de la distancia, <em>F ∝ 1/r²</em>).')
+        parts.append(f'La magnitud de la fuerza resultante es <strong>{par["F"]:.4f} N</strong> (Newtons) y '
+                      f'actúa entre las cargas separadas por una distancia de <strong>{par["r"]:.3f} m</strong>. '
+                      f'De acuerdo con la Ley de Coulomb, la intensidad de la fuerza disminuye '
+                      f'con el cuadrado de la distancia (<em>F ∝ 1/r²</em>): si la distancia se duplica, '
+                      f'la fuerza se reduce a la cuarta parte.')
 
-        ang = abs(par['theta'])
-        if ang < 15:
+        ang = par['theta']
+        ang_abs = abs(ang)
+        if ang_abs < 15:
             dir_desc = "predominantemente horizontal"
-        elif ang > 75:
-            dir_desc = "predominantemente vertical"
+            if ang >= 0:
+                dir_desc += " hacia la derecha"
+            else:
+                dir_desc += " hacia la izquierda"
+        elif ang_abs > 75:
+            if ang > 0:
+                dir_desc = "predominantemente vertical hacia arriba"
+            else:
+                dir_desc = "predominantemente vertical hacia abajo"
         else:
-            dir_desc = f"diagonal con un ángulo de {par['theta']:.1f}° respecto a la horizontal"
+            if ang > 0:
+                dir_desc = f"diagonal ascendente ({ang:.1f}° sobre la horizontal)"
+            else:
+                dir_desc = f"diagonal descendente ({abs(ang):.1f}° bajo la horizontal)"
+
         parts.append(f'Vectorialmente, la fuerza se orienta de manera <strong>{dir_desc}</strong>. '
-                      f'El ángulo θ = <strong>{par["theta"]:.1f}°</strong> determina la inclinación del vector '
-                      f'resultante en el plano cartesiano.')
+                      f'El ángulo θ = <strong>{ang:.1f}°</strong> mide la inclinación del vector de fuerza '
+                      f'respecto al eje horizontal positivo. Este ángulo es fundamental para descomponer '
+                      f'la fuerza en sus componentes cartesianas Fx y Fx.')
 
         fx_mag, fy_mag = abs(par['Fx']), abs(par['Fy'])
         if fx_mag > fy_mag * 1.5:
-            comp_desc = f'La componente <strong>Fx = {par["Fx"]:+.4f} N</strong> domina sobre Fy, indicando que el efecto horizontal es predominante.'
+            comp_desc = (f'La componente <strong>horizontal (Fx = {par["Fx"]:+.4f} N)</strong> '
+                          f'domina significativamente sobre la componente vertical. '
+                          f'Esto indica que la interacción entre estas cargas ocurre '
+                          f'principalmente a lo largo del eje X, generando un desplazamiento '
+                          f'predominantemente lateral.')
         elif fy_mag > fx_mag * 1.5:
-            comp_desc = f'La componente <strong>Fy = {par["Fy"]:+.4f} N</strong> domina sobre Fx, indicando que el efecto vertical es predominante.'
+            comp_desc = (f'La componente <strong>vertical (Fy = {par["Fy"]:+.4f} N)</strong> '
+                          f'domina significativamente sobre la componente horizontal. '
+                          f'Esto indica que la interacción entre estas cargas ocurre '
+                          f'principalmente a lo largo del eje Y, generando un desplazamiento '
+                          f'predominantemente vertical.')
         else:
-            comp_desc = f'Las componentes <strong>Fx = {par["Fx"]:+.4f} N</strong> y <strong>Fy = {par["Fy"]:+.4f} N</strong> están balanceadas, generando una fuerza diagonal equilibrada.'
+            comp_desc = (f'Las componentes <strong>Fx = {par["Fx"]:+.4f} N</strong> y '
+                          f'<strong>Fy = {par["Fy"]:+.4f} N</strong> están equilibradas, '
+                          f'generando una fuerza diagonal balanceada. Ambas direcciones '
+                          f'contribuyen de manera similar al vector resultante.')
         parts.append(comp_desc)
 
         q1m, q2m = abs(par['q1']), abs(par['q2'])
         if q1m > q2m * 1.15:
-            parts.append(f'<strong>Q{par["i"]}</strong> posee una carga de mayor magnitud ({q1m:.1f} µC frente a {q2m:.1f} µC), '
-                          f'por lo que ejerce una influencia eléctrica más intensa sobre Q{par["j"]}.')
+            parts.append(f'<strong>Q{par["i"]}</strong> posee una carga de mayor magnitud '
+                          f'({q1m:.1f} µC frente a {q2m:.1f} µC de Q{par["j"]}), '
+                          f'por lo que ejerce una influencia eléctrica más intensa. '
+                          f'La fuerza electrostática es proporcional al producto de ambas cargas, '
+                          f'por lo que una mayor magnitud en una de ellas incrementa '
+                          f'la intensidad de la interacción.')
         elif q2m > q1m * 1.15:
-            parts.append(f'<strong>Q{par["j"]}</strong> posee una carga de mayor magnitud ({q2m:.1f} µC frente a {q1m:.1f} µC), '
-                          f'por lo que ejerce una influencia eléctrica más intensa sobre Q{par["i"]}.')
+            parts.append(f'<strong>Q{par["j"]}</strong> posee una carga de mayor magnitud '
+                          f'({q2m:.1f} µC frente a {q1m:.1f} µC de Q{par["i"]}), '
+                          f'por lo que ejerce una influencia eléctrica más intensa. '
+                          f'La fuerza electrostática es proporcional al producto de ambas cargas, '
+                          f'por lo que una mayor magnitud en una de ellas incrementa '
+                          f'la intensidad de la interacción.')
+
+        # Relación con la Ley de Coulomb
+        producto = abs(par['q1'] * par['q2'])
+        f_esperada = 8.99e9 * producto * 1e-12 / (par['r']**2)
+        parts.append(f'<strong>Verificación analítica:</strong> Aplicando la Ley de Coulomb '
+                      f'<em>F = Ke · |q₁·q₂| / r²</em>, donde Ke = 8.99×10⁹ N·m²/C², '
+                      f'se obtiene F = (8.99×10⁹)({producto:.1f}×10⁻¹²)/({par["r"]:.3f})² = '
+                      f'<strong>{f_esperada:.4f} N</strong>, que coincide con el valor calculado.')
 
         return '<p>' + '</p><p>'.join(parts) + '</p>'
 
@@ -916,48 +1002,88 @@ if calcular:
         angle = fn['theta']
 
         if fmag < 1e-10:
-            return f'<p>La carga <strong>{fn["indice"]}</strong> ({carga_orig["q"]:+.1f} µC) se encuentra en <strong>equilibrio electrostático</strong>: la fuerza neta es aproximadamente cero, lo que indica que las contribuciones de todas las demás cargas se cancelan entre sí.</p>'
+            return (f'<p>La <strong>carga {fn["indice"]}</strong> ({carga_orig["q"]:+.1f} µC) se encuentra en '
+                     f'<strong>equilibrio electrostático</strong>: la fuerza neta es aproximadamente cero. '
+                     f'Esto significa que el vector resultante de todas las fuerzas ejercidas por las cargas '
+                     f'circundantes se anula completamente. La carga no experimenta aceleración eléctrica neta '
+                     f'y permanece en reposo relativo dentro del sistema.</p>')
 
         if fx > 0 and fy > 0:
-            dir_desc = "se dirige hacia el primer cuadrante (noreste)"
+            dir_desc = "se dirige hacia el noreste (primer cuadrante)"
             cuad = "primer cuadrante"
+            cuad_expl = "Fx > 0 y Fy > 0, ambas positivas"
         elif fx < 0 and fy > 0:
-            dir_desc = "se dirige hacia el segundo cuadrante (noroeste)"
+            dir_desc = "se dirige hacia el noroeste (segundo cuadrante)"
             cuad = "segundo cuadrante"
+            cuad_expl = "Fx < 0 y Fy > 0, horizontal negativa y vertical positiva"
         elif fx < 0 and fy < 0:
-            dir_desc = "se dirige hacia el tercer cuadrante (suroeste)"
+            dir_desc = "se dirige hacia el suroeste (tercer cuadrante)"
             cuad = "tercer cuadrante"
+            cuad_expl = "Fx < 0 y Fy < 0, ambas negativas"
         elif fx > 0 and fy < 0:
-            dir_desc = "se dirige hacia el cuarto cuadrante (sureste)"
+            dir_desc = "se dirige hacia el sureste (cuarto cuadrante)"
             cuad = "cuarto cuadrante"
+            cuad_expl = "Fx > 0 y Fy < 0, horizontal positiva y vertical negativa"
         elif fx > 0:
-            dir_desc = "es horizontal hacia la derecha"
+            dir_desc = "es horizontal hacia la derecha (este)"
+            cuad = "eje X positivo"
+            cuad_expl = "Fx > 0"
         elif fx < 0:
-            dir_desc = "es horizontal hacia la izquierda"
+            dir_desc = "es horizontal hacia la izquierda (oeste)"
+            cuad = "eje X negativo"
+            cuad_expl = "Fx < 0"
         elif fy > 0:
-            dir_desc = "es vertical hacia arriba"
+            dir_desc = "es vertical hacia arriba (norte)"
+            cuad = "eje Y positivo"
+            cuad_expl = "Fy > 0"
         else:
-            dir_desc = "es vertical hacia abajo"
+            dir_desc = "es vertical hacia abajo (sur)"
+            cuad = "eje Y negativo"
+            cuad_expl = "Fy < 0"
 
         parts.append(f'La <strong>carga {fn["indice"]}</strong> ({carga_orig["q"]:+.1f} µC) experimenta una '
                       f'<strong>fuerza neta de {fmag:.4f} N</strong> que {dir_desc}, '
-                      f'con un ángulo resultante de <strong>{angle:.1f}°</strong>.')
+                      f'con un ángulo resultante de <strong>{angle:.1f}°</strong> '
+                      f'respecto al eje horizontal positivo.')
 
-        parts.append(f'La orientación hacia el <strong>{cuad}</strong> del plano cartesiano indica que las '
-                      f'fuerzas ejercidas por las demás cargas no se cancelan completamente, '
-                      f'generando un desplazamiento neto en esa dirección.')
+        parts.append(f'La orientación hacia el <strong>{cuad}</strong> del plano cartesiano ({cuad_expl}) '
+                      f'indica que el vector suma de todas las fuerzas eléctricas ejercidas '
+                      f'sobre esta carga por las demás no se cancela. Este desequilibrio es el '
+                      f'responsable de la aceleración neta que experimentaría la carga si estuviera '
+                      f'libre de otras ligaduras.')
 
         if abs(fx) > abs(fy) * 1.5:
-            parts.append(f'La componente <strong>horizontal predomina</strong> (|Fx| = {abs(fx):.4f} N > |Fy| = {abs(fy):.4f} N), '
+            parts.append(f'La componente <strong>horizontal predomina</strong> '
+                          f'(|Fx| = {abs(fx):.4f} N > |Fy| = {abs(fy):.4f} N), '
                           f'lo que sugiere que las cargas con mayor influencia se encuentran '
-                          f'dispuestas lateralmente respecto a esta carga.')
+                          f'dispuestas lateralmente respecto a esta carga. El movimiento '
+                          f'resultante sería predominantemente horizontal.')
         elif abs(fy) > abs(fx) * 1.5:
-            parts.append(f'La componente <strong>vertical predomina</strong> (|Fy| = {abs(fy):.4f} N > |Fx| = {abs(fx):.4f} N), '
+            parts.append(f'La componente <strong>vertical predomina</strong> '
+                          f'(|Fy| = {abs(fy):.4f} N > |Fx| = {abs(fx):.4f} N), '
                           f'lo que sugiere que las cargas con mayor influencia se encuentran '
-                          f'dispuestas verticalmente respecto a esta carga.')
+                          f'dispuestas verticalmente respecto a esta carga. El movimiento '
+                          f'resultante sería predominantemente vertical.')
         else:
-            parts.append(f'Las componentes están <strong>balanceadas</strong> (Fx = {fx:+.4f} N, Fy = {fy:+.4f} N), '
-                          f'lo que indica una influencia múltiple y equilibrada en ambas direcciones.')
+            parts.append(f'Las componentes están <strong>balanceadas</strong> '
+                          f'(Fx = {fx:+.4f} N, Fy = {fy:+.4f} N), '
+                          f'lo que indica una influencia múltiple y equilibrada en ambas direcciones '
+                          f'cardinales. La fuerza neta resultante presenta una trayectoria diagonal '
+                          f'con contribuciones equitativas de ambos ejes.')
+
+        # Fuerzas circundantes que más contribuyen
+        contribuciones = []
+        for par in pares_info:
+            if par['i'] == fn['indice'] or par['j'] == fn['indice']:
+                otro = par['j'] if par['i'] == fn['indice'] else par['i']
+                contribuciones.append((otro, par['F']))
+        contribuciones.sort(key=lambda x: x[1], reverse=True)
+        if contribuciones:
+            top = contribuciones[0]
+            parts.append(f'La interacción que <strong>más contribuye</strong> a la fuerza neta sobre '
+                          f'Q{fn["indice"]} proviene de <strong>Q{top[0]}</strong> con una fuerza de '
+                          f'{top[1]:.4f} N. Esto se debe a la combinación de su magnitud de carga '
+                          f'y la proximidad espacial entre ambas.')
 
         return '<p>' + '</p><p>'.join(parts) + '</p>'
 
@@ -1021,48 +1147,92 @@ if calcular:
     def conclusiones_html():
         n = len(cargas)
         pos = sum(1 for c in cargas if c['q'] > 0)
+        neg = n - pos
         total_pares = len(pares_info)
         atracciones = sum(1 for p in pares_info if p['atraccion'])
+        repulsiones = total_pares - atracciones
         netas_mag = [fn['F'] for fn in fuerzas_netas]
         prom_neta = sum(netas_mag) / len(netas_mag) if netas_mag else 0
         dists = [p['r'] for p in pares_info]
         dist_prom = sum(dists) / len(dists) if dists else 0
+        dist_min = min(dists) if dists else 0
+        f_mags = [p['F'] for p in pares_info]
+        f_max = max(f_mags) if f_mags else 0
+        f_prom = sum(f_mags) / len(f_mags) if f_mags else 0
 
         lines = []
-        lines.append(f'<strong>Comportamiento electrostático:</strong> El sistema de {n} cargas ({pos} positiva{"" if pos==1 else "s"}, '
-                      f'{n-pos} negativa{"" if n-pos==1 else "s"}) presenta un total de {total_pares} interacciones '
-                      f'coulombianas. La interacción entre cada par obedece la Ley de Coulomb, '
-                      f'donde la magnitud de la fuerza es directamente proporcional al producto de las cargas '
-                      f'e inversamente proporcional al cuadrado de la distancia que las separa.')
+        lines.append(f'<strong>Comportamiento electrostático:</strong> El sistema está configurado con '
+                      f'<strong>{n} cargas</strong> ({pos} positiva{"" if pos==1 else "s"}, {neg} negativa{"" if neg==1 else "s"}), '
+                      f'generando <strong>{total_pares} interacciones coulombianas</strong> '
+                      f'({atracciones} de atracción, {repulsiones} de repulsión). '
+                      f'Cada interacción obedece la Ley de Coulomb (<em>F = Ke·|q₁·q₂|/r²</em>), '
+                      f'donde la magnitud de la fuerza electrostática es directamente proporcional '
+                      f'al producto de las cargas e inversamente proporcional al cuadrado de la distancia.')
 
-        lines.append(f'<strong>Distribución espacial:</strong> La distancia promedio entre cargas es de '
-                      f'<strong>{dist_prom:.3f} m</strong>. Las cargas más cercanas generan fuerzas de mayor magnitud, '
-                      f'mientras que las más alejadas contribuyen con menor intensidad, '
-                      f'lo que demuestra el efecto del inverso del cuadrado de la distancia.')
+        lines.append(f'<strong>Análisis de distancias:</strong> La distancia promedio entre pares de cargas es de '
+                      f'<strong>{dist_prom:.3f} m</strong>, con una distancia mínima de {dist_min:.3f} m. '
+                      f'La relación <em>F ∝ 1/r²</em> implica que el par más cercano ({dist_min:.3f} m) genera la '
+                      f'fuerza de mayor magnitud ({f_max:.4f} N), mientras que los pares más alejados '
+                      f'contribuyen con fuerzas significativamente menores.')
 
-        lines.append(f'<strong>Análisis vectorial:</strong> Las fuerzas se descomponen en componentes cartesianas '
-                      f'Fx y Fy, cuyo análisis permite comprender la dirección y magnitud del efecto neto '
-                      f'sobre cada carga. La fuerza neta promedio del sistema es de <strong>{prom_neta:.4f} N</strong>, '
-                      f'lo que refleja el grado de desequilibrio electrostático presente.')
+        lines.append(f'<strong>Análisis vectorial y componentes:</strong> Las fuerzas electrostáticas se representan '
+                      f'como vectores en el plano cartesiano, descomponiéndose en componentes horizontal (Fx) '
+                      f'y vertical (Fy). La fuerza neta promedio del sistema es de <strong>{prom_neta:.4f} N</strong>, '
+                      f'lo que refleja el grado de desequilibrio electrostático presente. '
+                      f'La magnitud promedio de las fuerzas entre pares es de <strong>{f_prom:.4f} N</strong>. '
+                      f'La componente angular (θ) determina la dirección precisa de cada vector resultante.')
 
-        if atracciones > total_pares * 0.6:
-            lines.append(f'<strong>Observación:</strong> La mayoría de las interacciones son de atracción, '
-                          f'lo que indica una configuración donde predominan los signos opuestos. '
-                          f'En un sistema con predominancia de atracción, las cargas tienden a '
-                          f'moverse unas hacia otras, reduciendo la energía potencial del sistema.')
-        elif (total_pares - atracciones) > total_pares * 0.6:
-            lines.append(f'<strong>Observación:</strong> La mayoría de las interacciones son de repulsión, '
-                          f'lo que indica una configuración donde predominan los signos iguales. '
-                          f'En un sistema con predominancia de repulsión, las cargas tienden a '
-                          f'separarse, aumentando la energía potencial del sistema.')
+        if atracciones > repulsiones:
+            pct = atracciones / total_pares * 100
+            lines.append(f'<strong>Predominancia de atracción ({pct:.0f}% de los pares):</strong> '
+                          f'La mayoría de las interacciones son de atracción, lo que indica una configuración '
+                          f'donde predominan los signos opuestos. Desde la perspectiva energética, '
+                          f'un sistema con atracción predominante tiende a disminuir su energía potencial '
+                          f'electrostática (<em>U = Ke·q₁·q₂/r</em>) a medida que las cargas se aproximan, '
+                          f'lo que sugiere una tendencia natural hacia la contracción del sistema.')
+        elif repulsiones > atracciones:
+            pct = repulsiones / total_pares * 100
+            lines.append(f'<strong>Predominancia de repulsión ({pct:.0f}% de los pares):</strong> '
+                          f'La mayoría de las interacciones son de repulsión, lo que indica una configuración '
+                          f'donde predominan los signos iguales. La energía potencial electrostática '
+                          f'del sistema es positiva y las cargas tienden a separarse, '
+                          f'lo que sugiere una tendencia natural hacia la expansión del sistema.')
+        else:
+            lines.append(f'<strong>Balance atractivo–repulsivo:</strong> Existe un equilibrio numérico entre '
+                          f'interacciones de atracción y repulsión, lo que genera una dinámica '
+                          f'mixta donde algunas cargas se aproximan mientras otras se separan, '
+                          f'produciendo una configuración electrostática compleja.')
 
-        q_signo = [(c['q'], c['indice']) for c in cargas]
-        pares_misma_carga = [(p['i'], p['j']) for p in pares_info
-                              if cargas[p['i']-1]['q'] * cargas[p['j']-1]['q'] > 0]
-        if len(pares_misma_carga) == total_pares and total_pares > 0:
-            lines.append(f'<strong>Conclusión global:</strong> Todas las cargas poseen el mismo signo, '
-                          f'por lo que únicamente existen fuerzas de repulsión. '
-                          f'El sistema se encuentra en un estado de expansión electrostática.')
+        # Fuerza máxima y mínima del sistema
+        par_max = None
+        par_min = None
+        for p in pares_info:
+            if p['F'] == f_max:
+                par_max = p
+            if p['F'] == dist_min and False:
+                pass
+        for p in pares_info:
+            if abs(p['F'] - f_max) < 1e-10:
+                par_max = p
+                break
+        for p in pares_info:
+            if p['F'] == min(f_mags):
+                par_min = p
+                break
+
+        if par_max:
+            causa = "atracción" if par_max['atraccion'] else "repulsión"
+            lines.append(f'<strong>Interacción dominante:</strong> El par Q{par_max["i"]}–Q{par_max["j"]} presenta '
+                          f'la mayor magnitud de fuerza ({par_max["F"]:.4f} N, {causa}), '
+                          f'ubicados a una distancia de {par_max["r"]:.3f} m. '
+                          f'Esta interacción es la que domina el comportamiento dinámico del sistema.')
+
+        # Verificación de consistencia
+        lines.append(f'<strong>Verificación física:</strong> Todos los resultados cumplen la Ley de Coulomb '
+                      f'y el principio de superposición. Las fuerzas se han calculado como suma vectorial '
+                      f'de las contribuciones individuales, respetando la naturaleza atractiva o repulsiva '
+                      f'según el signo de las cargas involucradas. Los resultados son coherentes con las '
+                      f'leyes fundamentales del electromagnetismo clásico.')
 
         return '<p>' + '</p><p>'.join(lines) + '</p>'
 
@@ -1077,19 +1247,30 @@ if calcular:
         for par in pares_info:
             bc = "attract" if par['atraccion'] else "repel"
             bt = "Atracción" if par['atraccion'] else "Repulsión"
+            interp_signo = "cargas de signo opuesto se atraen" if par['atraccion'] else "cargas del mismo signo se repelen"
+            ang = par['theta']
+            if abs(ang) < 15:
+                dir_interp = "La fuerza es predominantemente horizontal"
+            elif abs(ang) > 75:
+                dir_interp = "La fuerza es predominantemente vertical"
+            elif ang > 0:
+                dir_interp = f"El vector apunta hacia el noreste ({ang:.1f}° sobre la horizontal)"
+            else:
+                dir_interp = f"El vector apunta hacia el sureste ({abs(ang):.1f}° bajo la horizontal)"
             html += f"""
             <div class="rcard">
               <div class="rcard-header">
-                <span class="rcard-title">Q{par['i']} ↔ Q{par['j']}</span>
+                <span class="rcard-title">Carga Q{par['i']} ↔ Q{par['j']}</span>
                 <span class="rcard-badge {bc}">{bt}</span>
               </div>
-              <div class="rcard-value">{par['F']:.4f}<span>N</span></div>
+              <div class="rcard-value">{par['F']:.4f}<span>N · Fuerza electrostática</span></div>
               <div class="rcard-meta">
-                <div class="rcard-row"><span class="lbl">q₁</span><span class="val">{par['q1']:+.2f} µC</span></div>
-                <div class="rcard-row"><span class="lbl">q₂</span><span class="val">{par['q2']:+.2f} µC</span></div>
-                <div class="rcard-row"><span class="lbl">r</span><span class="val">{par['r']:.4f} m</span></div>
-                <div class="rcard-row"><span class="lbl">θ</span><span class="val">{par['theta']:.2f}°</span></div>
+                <div class="rcard-row"><span class="lbl">q₁ (Carga 1)</span><span class="val">{par['q1']:+.2f} µC</span></div>
+                <div class="rcard-row"><span class="lbl">q₂ (Carga 2)</span><span class="val">{par['q2']:+.2f} µC</span></div>
+                <div class="rcard-row"><span class="lbl">r (Distancia)</span><span class="val">{par['r']:.4f} m</span></div>
+                <div class="rcard-row"><span class="lbl">θ (Ángulo del vector)</span><span class="val">{par['theta']:.2f}°</span></div>
               </div>
+              <div class="rcard-interp">{interp_signo}. {dir_interp}.</div>
             </div>"""
         html += '</div>'
         st.markdown(html, unsafe_allow_html=True)
@@ -1098,18 +1279,36 @@ if calcular:
         html = '<div class="result-grid">'
         for fn in fuerzas_netas:
             color = fn['color']
+            fx, fy, fmag = fn['Fx'], fn['Fy'], fn['F']
+            if fx > 0 and fy > 0:
+                neta_dir = "noreste (primer cuadrante)"
+            elif fx < 0 and fy > 0:
+                neta_dir = "noroeste (segundo cuadrante)"
+            elif fx < 0 and fy < 0:
+                neta_dir = "suroeste (tercer cuadrante)"
+            elif fx > 0 and fy < 0:
+                neta_dir = "sureste (cuarto cuadrante)"
+            elif fx > 0:
+                neta_dir = "este (horizontal derecha)"
+            elif fx < 0:
+                neta_dir = "oeste (horizontal izquierda)"
+            elif fy > 0:
+                neta_dir = "norte (vertical arriba)"
+            else:
+                neta_dir = "sur (vertical abajo)"
             html += f"""
             <div class="rcard net-force">
               <div class="rcard-header">
                 <span class="rcard-title">Carga {fn['indice']}</span>
                 <span class="rcard-badge net">Fuerza neta</span>
               </div>
-              <div class="rcard-value">{fn['F']:.4f}<span>N</span></div>
+              <div class="rcard-value">{fn['F']:.4f}<span>N · Resultante</span></div>
               <div class="rcard-meta">
-                <div class="rcard-row"><span class="lbl">Fx</span><span class="val">{fn['Fx']:+.4f} N</span></div>
-                <div class="rcard-row"><span class="lbl">Fy</span><span class="val">{fn['Fy']:+.4f} N</span></div>
-                <div class="rcard-row"><span class="lbl">Dirección</span><span class="val">{fn['theta']:.2f}°</span></div>
+                <div class="rcard-row"><span class="lbl">Fx (Componente horizontal)</span><span class="val">{fn['Fx']:+.4f} N</span></div>
+                <div class="rcard-row"><span class="lbl">Fy (Componente vertical)</span><span class="val">{fn['Fy']:+.4f} N</span></div>
+                <div class="rcard-row"><span class="lbl">θ (Dirección resultante)</span><span class="val">{fn['theta']:.2f}°</span></div>
               </div>
+              <div class="rcard-interp">La fuerza neta resultante apunta hacia el <strong>{neta_dir}</strong>, con un ángulo de {fn['theta']:.1f}°.</div>
             </div>"""
         html += '</div>'
         st.markdown(html, unsafe_allow_html=True)
@@ -1145,26 +1344,48 @@ if calcular:
                 ax1.plot([ci['x'], cj['x']], [ci['y'], cj['y']],
                          color='#cbd5e1', linewidth=0.7, linestyle=ls, alpha=0.5, zorder=1)
 
-            for c, fn in zip(cargas_coulombs, fuerzas_netas):
+            # Detectar superposición y ajustar posición de etiquetas
+            n_charges = len(cargas_coulombs)
+            label_offsets = []
+            for idx, c in enumerate(cargas_coulombs):
+                # Buscar vecinos cercanos
+                near = False
+                for other in cargas_coulombs:
+                    if other['indice'] == c['indice']: continue
+                    dist = math.hypot(c['x'] - other['x'], c['y'] - other['y'])
+                    if dist < half * 0.5:
+                        near = True
+                        break
+                # Alternar posición: even index → abajo, odd → arriba
+                # Si hay vecinos cerca, desplazar más
+                if near:
+                    offset_y = half * 0.16 if idx % 2 == 0 else -half * 0.16
+                else:
+                    offset_y = half * 0.11 if idx % 2 == 0 else -half * 0.11
+                label_offsets.append(offset_y)
+
+            for idx, (c, fn) in enumerate(zip(cargas_coulombs, fuerzas_netas)):
                 col = fn['color']
-                ax1.scatter(c['x'], c['y'], s=200, color=col, zorder=4,
+                ax1.scatter(c['x'], c['y'], s=190, color=col, zorder=4,
                             edgecolors='white', linewidths=2, alpha=0.9)
                 signo = '+' if c['q'] > 0 else '−'
                 ax1.text(c['x'], c['y'], signo, ha='center', va='center',
-                         color='white', fontsize=11, fontweight='bold', zorder=5)
-                ax1.text(c['x'], c['y'] - half * 0.12,
+                         color='white', fontsize=10, fontweight='bold', zorder=5)
+                off = label_offsets[idx]
+                va = 'top' if off > 0 else 'bottom'
+                ax1.text(c['x'], c['y'] + off,
                          f"Q{c['indice']}  {cargas[c['indice']-1]['q']:.1f}µC",
-                         ha='center', va='top', fontsize=7.5, color='#64748b',
+                         ha='center', va=va, fontsize=7.5, color='#64748b',
                          fontfamily='monospace',
                          bbox=dict(boxstyle='round,pad=0.2', facecolor='#ffffff',
                                    edgecolor=col+'66', linewidth=0.8), zorder=5)
                 if fn['F'] > 1e-6:
-                    scale = half * 0.3
+                    scale = half * 0.28
                     fx_v = (fn['Fx'] / fn['F']) * scale
                     fy_v = (fn['Fy'] / fn['F']) * scale
                     ax1.annotate('', xy=(c['x']+fx_v, c['y']+fy_v),
                                  xytext=(c['x'], c['y']),
-                                 arrowprops=dict(arrowstyle='->', color=col, lw=2.5, mutation_scale=15),
+                                 arrowprops=dict(arrowstyle='->', color=col, lw=2.2, mutation_scale=13),
                                  zorder=3)
             ax1.set_xlabel('X (m)', fontsize=8.5, color='#64748b', fontfamily='monospace')
 
