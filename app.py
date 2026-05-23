@@ -10,7 +10,7 @@ import os
 # PAGE CONFIG
 # ─────────────────────────────────────────────
 st.set_page_config(
-    page_title="Coulomb Lab",
+    page_title="Simulador de Cargas Eléctricas",
     page_icon="⚡",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -654,6 +654,58 @@ div[data-testid="stButton"] > button:active {
 }
 
 .analysis-conclusion p:last-child { margin-bottom: 0; }
+
+/* ── VECTOR PANEL ── */
+.vector-panel {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 12px 16px;
+  margin-top: 8px;
+}
+
+.vector-panel-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.vp-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px 20px;
+}
+
+.vp-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.73rem;
+}
+
+.vp-item:nth-last-child(-n+2) { border-bottom: none; }
+
+.vp-item .lbl { color: var(--text-muted); }
+.vp-item .val {
+  font-family: var(--mono);
+  font-weight: 600;
+  color: var(--text);
+  font-size: 0.76rem;
+}
+
+.vp-sub {
+  font-size: 0.68rem;
+  color: var(--text-faint);
+  padding: 3px 0;
+  margin-top: 4px;
+  border-top: 1px dashed var(--border);
+  text-align: center;
+}
 
 /* ── ERROR ── */
 div[data-testid="stAlert"] {
@@ -1396,10 +1448,39 @@ if calcular:
             st.pyplot(fig1, use_container_width=True)
             plt.close(fig1)
             st.markdown('</div>', unsafe_allow_html=True)
+            # Panel de resumen vectorial del sistema
+            neta_sum = max(fuerzas_netas, key=lambda x: x['F']) if fuerzas_netas else None
+            if neta_sum:
+                fx_s, fy_s, fm_s, th_s = neta_sum['Fx'], neta_sum['Fy'], neta_sum['F'], neta_sum['theta']
+                if fx_s > 0 and fy_s > 0:
+                    cuad_s = "Primer cuadrante (noreste)"
+                elif fx_s < 0 and fy_s > 0:
+                    cuad_s = "Segundo cuadrante (noroeste)"
+                elif fx_s < 0 and fy_s < 0:
+                    cuad_s = "Tercer cuadrante (suroeste)"
+                elif fx_s > 0 and fy_s < 0:
+                    cuad_s = "Cuarto cuadrante (sureste)"
+                else:
+                    cuad_s = "Eje"
+                max_comp = max(abs(fx_s), abs(fy_s))
+                dom_s = "Horizontal (Fx)" if abs(fx_s) == max_comp else "Vertical (Fy)"
+                st.markdown(f"""
+                <div class="vector-panel">
+                  <div class="vector-panel-title">📊 Resumen vectorial del sistema</div>
+                  <div class="vp-grid">
+                    <div class="vp-item"><span class="lbl">Fx total</span><span class="val" style="color:#0284c7;">{fx_s:+.4f} N</span></div>
+                    <div class="vp-item"><span class="lbl">Fy total</span><span class="val" style="color:#ea580c;">{fy_s:+.4f} N</span></div>
+                    <div class="vp-item"><span class="lbl">|F| resultante</span><span class="val" style="color:#7c3aed;">{fm_s:.4f} N</span></div>
+                    <div class="vp-item"><span class="lbl">Ángulo θ</span><span class="val">{th_s:.2f}°</span></div>
+                    <div class="vp-item"><span class="lbl">Dirección</span><span class="val">{cuad_s.split(" (")[0]}</span></div>
+                    <div class="vp-item"><span class="lbl">Componente dom.</span><span class="val">{dom_s}</span></div>
+                  </div>
+                  <div class="vp-sub">Datos correspondientes a la carga con mayor fuerza neta del sistema</div>
+                </div>""", unsafe_allow_html=True)
 
         # Gráfica 2: Descomposición vectorial
         with col_g2:
-            st.markdown('<div class="chart-wrap"><div class="chart-label">Descomposición vectorial · Primer par</div>', unsafe_allow_html=True)
+            st.markdown('<div class="chart-wrap"><div class="chart-label">Descomposición vectorial · Primer par de cargas</div>', unsafe_allow_html=True)
             if pares_info:
                 fig2, ax2 = plt.subplots(figsize=(7, 7))
                 fig2.patch.set_facecolor('#ffffff')
@@ -1408,66 +1489,129 @@ if calcular:
                 par = pares_info[0]
                 F, Fx, Fy = par['F'], par['Fx'], par['Fy']
                 theta_rad = math.radians(par['theta'])
+                theta_deg = par['theta']
                 max_c = max(abs(Fx), abs(Fy), F, 0.01)
-                norm = 3.5 / max_c
-                fx_n, fy_n = Fx * norm, Fy * norm
+                norm = 3.8 / max_c
+                fx_n = Fx * norm
+                fy_n = Fy * norm
                 f_nx = F * norm * math.cos(theta_rad)
                 f_ny = F * norm * math.sin(theta_rad)
 
-                ax2.set_xlim(-0.8, 5.0)
-                ax2.set_ylim(-0.8, 5.0)
+                ax2.set_xlim(-0.6, 5.4)
+                ax2.set_ylim(-0.6, 5.4)
                 ax2.set_aspect('equal')
-                ax2.grid(True, color='#e2e8f0', linewidth=0.5, alpha=0.7)
+                ax2.grid(True, color='#e2e8f0', linewidth=0.4, alpha=0.5)
 
-                for ox, oy, ddx, ddy in [(0,0,4.5,0),(0,0,0,4.5)]:
-                    ax2.annotate('', xy=(ox+ddx, oy+ddy), xytext=(ox,oy),
-                                 arrowprops=dict(arrowstyle='->', color='#cbd5e1', lw=1.2))
-                ax2.text(4.7, -0.18, 'X', fontsize=9, color='#64748b', fontfamily='monospace', fontweight='bold')
-                ax2.text(-0.18, 4.7, 'Y', fontsize=9, color='#64748b', fontfamily='monospace', fontweight='bold')
+                # Ejes de referencia (suaves)
+                ax2.axhline(0, color='#e2e8f0', linewidth=0.6, zorder=0)
+                ax2.axvline(0, color='#e2e8f0', linewidth=0.6, zorder=0)
+                ax2.annotate('', xy=(4.8, 0), xytext=(0,0),
+                             arrowprops=dict(arrowstyle='->', color='#cbd5e1', lw=0.8))
+                ax2.annotate('', xy=(0, 4.8), xytext=(0,0),
+                             arrowprops=dict(arrowstyle='->', color='#cbd5e1', lw=0.8))
+                ax2.text(4.9, -0.12, 'x', fontsize=8, color='#94a3b8', fontfamily='monospace')
+                ax2.text(-0.14, 4.9, 'y', fontsize=8, color='#94a3b8', fontfamily='monospace')
 
-                ax2.plot([fx_n, fx_n], [0, fy_n], color='#94a3b8', linewidth=0.8, linestyle='--', alpha=0.5)
-                ax2.plot([0, fx_n], [fy_n, fy_n], color='#94a3b8', linewidth=0.8, linestyle='--', alpha=0.5)
+                # Líneas de proyección (muy sutiles)
+                ax2.plot([fx_n, fx_n], [0, fy_n], color='#cbd5e1', linewidth=0.6, linestyle='--', alpha=0.4)
+                ax2.plot([0, fx_n], [fy_n, fy_n], color='#cbd5e1', linewidth=0.6, linestyle='--', alpha=0.4)
 
+                # Vectores principales
+                # Fx (horizontal, azul)
                 ax2.annotate('', xy=(fx_n, 0), xytext=(0,0),
-                             arrowprops=dict(arrowstyle='->', color='#0284c7', lw=2.5, mutation_scale=14))
+                             arrowprops=dict(arrowstyle='->', color='#0284c7', lw=2.8, mutation_scale=16))
+                # Fy (vertical, naranja)
                 ax2.annotate('', xy=(fx_n, fy_n), xytext=(fx_n, 0),
-                             arrowprops=dict(arrowstyle='->', color='#ea580c', lw=2.5, mutation_scale=14))
+                             arrowprops=dict(arrowstyle='->', color='#ea580c', lw=2.8, mutation_scale=16))
+                # Resultante (diagonal, violeta)
                 ax2.annotate('', xy=(f_nx, f_ny), xytext=(0,0),
-                             arrowprops=dict(arrowstyle='->', color='#7c3aed', lw=3, mutation_scale=16))
+                             arrowprops=dict(arrowstyle='->', color='#7c3aed', lw=3.5, mutation_scale=20))
 
+                # Etiquetas de vectores (posicionadas cuidadosamente)
+                # Fx: sobre el eje, ligeramente arriba si el vector es corto
+                fx_lab_y = -0.35
+                ax2.text(fx_n/2, fx_lab_y, 'Fx', ha='center', fontsize=9,
+                         color='#0284c7', fontfamily='monospace', fontweight='bold')
+                ax2.text(fx_n/2, fx_lab_y - 0.25, f'{Fx:+.3f} N', ha='center', fontsize=7,
+                         color='#0284c7', fontfamily='monospace')
+
+                # Fy: a la derecha de la flecha vertical
+                off_x = 0.25 if fy_n >= 0 else 0.25
+                ax2.text(fx_n + off_x, fy_n/2, 'Fy', va='center', fontsize=9,
+                         color='#ea580c', fontfamily='monospace', fontweight='bold')
+                ax2.text(fx_n + off_x, fy_n/2 - 0.28, f'{Fy:+.3f} N', va='center', fontsize=7,
+                         color='#ea580c', fontfamily='monospace')
+
+                # Resultante: en el punto medio, ligeramente desplazado
+                mid_x = f_nx * 0.45
+                mid_y = f_ny * 0.45
+                # Desplazar perpendicular para no tapar el vector
+                perp_len = 0.25
+                ang_perp = theta_rad + math.pi/2
+                if fy_n >= 0:
+                    off_rx = perp_len * math.cos(ang_perp)
+                    off_ry = perp_len * math.sin(ang_perp)
+                else:
+                    off_rx = -perp_len * math.cos(ang_perp)
+                    off_ry = -perp_len * math.sin(ang_perp)
+                ax2.text(mid_x + off_rx, mid_y + off_ry, 'F', ha='center', va='center', fontsize=10,
+                         color='#7c3aed', fontfamily='monospace', fontweight='bold')
+                ax2.text(mid_x + off_rx, mid_y + off_ry - 0.3, f'{F:.3f} N', ha='center', fontsize=7,
+                         color='#7c3aed', fontfamily='monospace')
+
+                # Arco del ángulo
                 if abs(theta_rad) > 0.01:
+                    arc_r = 0.7
                     arc = np.linspace(0, theta_rad, 60)
-                    ax2.plot(0.65*np.cos(arc), 0.65*np.sin(arc), color='#dc2626', linewidth=1.8, alpha=0.7)
+                    ax2.plot(arc_r*np.cos(arc), arc_r*np.sin(arc), color='#dc2626', linewidth=1.5, alpha=0.6)
                     mid = theta_rad / 2
-                    ax2.text(0.92*math.cos(mid), 0.92*math.sin(mid),
-                             f'{par["theta"]:.1f}°', fontsize=8, color='#dc2626',
+                    ang_lab_r = 0.95
+                    ax2.text(ang_lab_r*math.cos(mid), ang_lab_r*math.sin(mid),
+                             f'{theta_deg:.1f}°', fontsize=7.5, color='#dc2626',
                              fontfamily='monospace', ha='center', va='center')
 
-                ax2.text(fx_n/2, -0.38, f'Fx = {Fx:+.3f} N', ha='center', fontsize=8,
-                         color='#0284c7', fontfamily='monospace',
-                         bbox=dict(boxstyle='round,pad=0.3', facecolor='#ffffff', edgecolor='#0284c730', linewidth=1))
-                ax2.text(fx_n+0.28, fy_n/2, f'Fy = {Fy:+.3f} N', ha='left', fontsize=8,
-                         color='#ea580c', fontfamily='monospace',
-                         bbox=dict(boxstyle='round,pad=0.3', facecolor='#ffffff', edgecolor='#ea580c30', linewidth=1))
-                ax2.text(f_nx*0.5-0.3, f_ny*0.5+0.22, f'|F| = {F:.3f} N', ha='center', fontsize=8,
-                         color='#7c3aed', fontfamily='monospace',
-                         bbox=dict(boxstyle='round,pad=0.3', facecolor='#ffffff', edgecolor='#7c3aed30', linewidth=1))
+                # Pequeños marcadores de cuadrante en las esquinas
+                ax2.text(4.8, 4.8, 'Q1', fontsize=6.5, color='#cbd5e1', fontfamily='monospace', ha='right', va='top', alpha=0.6)
+                ax2.text(-0.5, 4.8, 'Q2', fontsize=6.5, color='#cbd5e1', fontfamily='monospace', ha='left', va='top', alpha=0.6)
+                ax2.text(-0.5, -0.5, 'Q3', fontsize=6.5, color='#cbd5e1', fontfamily='monospace', ha='left', va='bottom', alpha=0.6)
+                ax2.text(4.8, -0.5, 'Q4', fontsize=6.5, color='#cbd5e1', fontfamily='monospace', ha='right', va='bottom', alpha=0.6)
 
                 legend_items = [
-                    mpatches.Patch(color='#7c3aed', label=f'Q{par["i"]}↔Q{par["j"]}  |F|={F:.4f}N'),
-                    mpatches.Patch(color='#0284c7', label=f'Fx = {Fx:+.4f} N'),
-                    mpatches.Patch(color='#ea580c', label=f'Fy = {Fy:+.4f} N'),
+                    mpatches.Patch(color='#7c3aed', label=f'Fuerza resultante  |F| = {F:.4f} N'),
+                    mpatches.Patch(color='#0284c7', label=f'Componente horizontal  Fx = {Fx:+.4f} N'),
+                    mpatches.Patch(color='#ea580c', label=f'Componente vertical  Fy = {Fy:+.4f} N'),
                 ]
-                leg = ax2.legend(handles=legend_items, loc='lower right', fontsize=7.5,
-                                 framealpha=0.9, facecolor='#ffffff', edgecolor='#e2e8f0',
+                leg = ax2.legend(handles=legend_items, loc='upper left', fontsize=7,
+                                 framealpha=0.85, facecolor='#ffffff', edgecolor='#e2e8f0',
                                  labelcolor='#475569')
-                leg.get_frame().set_linewidth(0.8)
+                leg.get_frame().set_linewidth(0.6)
 
-                ax2.tick_params(colors='#94a3b8', labelsize=7.5)
+                ax2.tick_params(colors='#cbd5e1', labelsize=6.5)
                 ax2.spines[:].set_color('#e2e8f0')
-                plt.tight_layout(pad=1.2)
+                plt.tight_layout(pad=0.8)
                 st.pyplot(fig2, use_container_width=True)
                 plt.close(fig2)
+
+                # Panel de datos de descomposición
+                if fx_n > 0:
+                    dir_label = "derecha"
+                else:
+                    dir_label = "izquierda"
+                if fy_n > 0:
+                    dir_label += "/arriba"
+                elif fy_n < 0:
+                    dir_label += "/abajo"
+                st.markdown(f"""
+                <div class="vector-panel">
+                  <div class="vector-panel-title">📐 Descomposición del par Q{par['i']}–Q{par['j']}</div>
+                  <div class="vp-grid">
+                    <div class="vp-item"><span class="lbl">Fuerza resultante (F)</span><span class="val" style="color:#7c3aed;">{F:.4f} N</span></div>
+                    <div class="vp-item"><span class="lbl">Componente horizontal (Fx)</span><span class="val" style="color:#0284c7;">{Fx:+.4f} N</span></div>
+                    <div class="vp-item"><span class="lbl">Componente vertical (Fy)</span><span class="val" style="color:#ea580c;">{Fy:+.4f} N</span></div>
+                    <div class="vp-item"><span class="lbl">Ángulo θ</span><span class="val">{theta_deg:.2f}°</span></div>
+                  </div>
+                  <div class="vp-sub">F inclinada {theta_deg:.1f}° · Fx {'domina' if abs(Fx) > abs(Fy) else 'secundaria'} · Fy {'domina' if abs(Fy) > abs(Fx) else 'secundaria'}</div>
+                </div>""", unsafe_allow_html=True)
             st.markdown('</div>', unsafe_allow_html=True)
 
     with tab4:
@@ -1513,6 +1657,6 @@ if calcular:
 # ─────────────────────────────────────────────
 st.markdown("""
 <div class="app-footer">
-  <span class="ft-name">Coulomb Lab</span> · Proyecto de Cargas de Coulomb &nbsp;·&nbsp; Electromagnetismo &nbsp;·&nbsp; UTS
+  Proyecto de Cargas de Coulomb &nbsp;·&nbsp; Electromagnetismo &nbsp;·&nbsp; UTS
 </div>
 """, unsafe_allow_html=True)
