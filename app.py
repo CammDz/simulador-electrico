@@ -284,64 +284,80 @@ header { display: none !important; }
 /* ── STREAMLIT INPUT OVERRIDES ── */
 div[data-testid="stNumberInput"] label,
 div[data-testid="stSelectbox"] label {
-  font-size: 0.68rem !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.09em !important;
-  text-transform: uppercase !important;
-  color: var(--text-faint) !important;
-  font-family: var(--sans) !important;
+  display: none !important;
 }
 
 div[data-testid="stNumberInput"] input {
-  background: var(--surface-2) !important;
-  border: 1px solid var(--border) !important;
+  background: #ffffff !important;
+  border: 1px solid #d1d5db !important;
   border-radius: var(--radius-sm) !important;
   color: var(--text) !important;
   font-family: var(--mono) !important;
   font-size: 0.88rem !important;
   font-weight: 500 !important;
-  padding: 8px 10px !important;
+  padding: 7px 10px !important;
   transition: border-color 0.15s, box-shadow 0.15s !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03) !important;
 }
 
 div[data-testid="stNumberInput"] input:focus {
-  border-color: var(--border-glow) !important;
-  box-shadow: 0 0 0 3px rgba(2,132,199,0.08) !important;
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1) !important;
   outline: none !important;
 }
 
 div[data-testid="stNumberInput"] button {
-  background: var(--surface-2) !important;
-  border: 1px solid var(--border) !important;
-  color: var(--text-muted) !important;
-  border-radius: 6px !important;
+  background: #f9fafb !important;
+  border: 1px solid #d1d5db !important;
+  color: #6b7280 !important;
+  border-radius: 4px !important;
+  font-size: 0.7rem !important;
+  transition: background 0.15s, color 0.15s !important;
 }
 
 div[data-testid="stNumberInput"] button:hover {
-  background: var(--blue-dim) !important;
-  border-color: var(--border-glow) !important;
-  color: var(--blue) !important;
+  background: #eff6ff !important;
+  border-color: #2563eb !important;
+  color: #2563eb !important;
 }
 
 div[data-testid="stSelectbox"] div[data-baseweb="select"] > div {
-  background: var(--surface-2) !important;
-  border: 1px solid var(--border) !important;
+  background: #ffffff !important;
+  border: 1px solid #d1d5db !important;
   border-radius: var(--radius-sm) !important;
   color: var(--text) !important;
   font-family: var(--mono) !important;
   font-size: 0.88rem !important;
-  min-height: 40px !important;
+  min-height: 38px !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03) !important;
+  transition: border-color 0.15s, box-shadow 0.15s !important;
 }
 
 div[data-testid="stSelectbox"] div[data-baseweb="select"] > div:hover {
-  border-color: var(--border-glow) !important;
+  border-color: #2563eb !important;
+}
+
+div[data-testid="stSelectbox"] div[data-baseweb="select"] > div:focus-within {
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1) !important;
+}
+
+/* Flecha del selector visible */
+div[data-testid="stSelectbox"] div[data-baseweb="select"] svg,
+div[data-testid="stSelectbox"] div[data-baseweb="select"] span[aria-hidden="true"] svg {
+  fill: #6b7280 !important;
+  color: #6b7280 !important;
+  opacity: 1 !important;
+  width: 14px !important;
+  height: 14px !important;
 }
 
 [data-baseweb="popover"] ul {
-  background: var(--surface-1) !important;
-  border: 1px solid var(--border) !important;
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
   border-radius: var(--radius-md) !important;
   padding: 4px !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08) !important;
 }
 
 [data-baseweb="popover"] li {
@@ -349,11 +365,12 @@ div[data-testid="stSelectbox"] div[data-baseweb="select"] > div:hover {
   font-family: var(--mono) !important;
   font-size: 0.85rem !important;
   color: var(--text) !important;
+  padding: 6px 12px !important;
 }
 
 [data-baseweb="popover"] li:hover {
-  background: var(--blue-dim) !important;
-  color: var(--blue) !important;
+  background: #eff6ff !important;
+  color: #2563eb !important;
 }
 
 /* ── BUTTON ── */
