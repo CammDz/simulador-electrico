@@ -10,7 +10,7 @@ import os
 # PAGE CONFIG
 # ─────────────────────────────────────────────
 st.set_page_config(
-    page_title="ElectroSim · Coulomb Lab",
+    page_title="Coulomb Lab",
     page_icon="⚡",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -26,21 +26,21 @@ st.markdown("""
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:           #080c14;
-  --surface-1:    #0d1220;
-  --surface-2:    #111827;
-  --surface-3:    #1a2236;
-  --border:       rgba(255,255,255,0.07);
-  --border-glow:  rgba(56,189,248,0.25);
-  --text:         #e2e8f0;
+  --bg:           #f8fafc;
+  --surface-1:    #ffffff;
+  --surface-2:    #f1f5f9;
+  --surface-3:    #e2e8f0;
+  --border:       rgba(0,0,0,0.07);
+  --border-glow:  rgba(2,132,199,0.18);
+  --text:         #0f172a;
   --text-muted:   #64748b;
-  --text-faint:   #5b6e8a;
-  --blue:         #38bdf8;
-  --blue-dim:     rgba(56,189,248,0.12);
-  --purple:       #a78bfa;
-  --purple-dim:   rgba(167,139,250,0.10);
-  --red:          #f87171;
-  --green:        #34d399;
+  --text-faint:   #94a3b8;
+  --blue:         #0284c7;
+  --blue-dim:     rgba(2,132,199,0.07);
+  --purple:       #7c3aed;
+  --purple-dim:   rgba(124,58,237,0.07);
+  --red:          #dc2626;
+  --green:        #059669;
   --mono:         'JetBrains Mono', monospace;
   --sans:         'Inter', -apple-system, sans-serif;
   --radius-sm:    8px;
@@ -75,51 +75,51 @@ footer { display: none !important; }
 .app-header {
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding: 26px 32px;
-  margin: 24px 0 28px;
-  background: linear-gradient(135deg, rgba(56,189,248,0.05) 0%, rgba(167,139,250,0.03) 100%);
+  gap: 22px;
+  padding: 22px 30px;
+  margin: 18px 0 22px;
+  background: var(--surface-1);
   border: 1px solid var(--border);
-  border-top: 1px solid rgba(56,189,248,0.15);
   border-radius: var(--radius-xl);
-  box-shadow: 0 1px 0 rgba(255,255,255,0.03) inset, 0 20px 60px rgba(0,0,0,0.45);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.04);
 }
 
 .app-header-logo {
   flex-shrink: 0;
-  width: 64px; height: 64px;
+  width: 56px; height: 56px;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(255,255,255,0.1);
-  background: #ffffff;
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 4px 16px rgba(0,0,0,0.3);
+  border: 1px solid var(--border);
+  background: var(--surface-1);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   display: flex; align-items: center; justify-content: center;
-  font-size: 1.8rem;
   overflow: hidden;
 }
 
 .app-header-logo img {
   width: 100%; height: 100%;
-  object-fit: contain; padding: 6px;
-  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
+  object-fit: contain; padding: 5px;
 }
 
 .app-title {
-  font-size: 1.65rem;
+  font-size: 1.55rem;
   font-weight: 700;
-  letter-spacing: -0.03em;
-  background: linear-gradient(90deg, var(--blue) 0%, var(--purple) 100%);
+  letter-spacing: -0.025em;
+  color: var(--text);
+  line-height: 1.25;
+}
+
+.app-title .accent {
+  background: linear-gradient(135deg, #0284c7, #7c3aed);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  line-height: 1.2;
 }
 
 .app-subtitle {
   font-size: 0.78rem;
   color: var(--text-muted);
-  margin-top: 5px;
+  margin-top: 3px;
   font-weight: 400;
-  letter-spacing: 0.02em;
 }
 
 .app-badges {
@@ -128,9 +128,9 @@ footer { display: none !important; }
 }
 
 .badge {
-  font-size: 0.71rem;
+  font-size: 0.69rem;
   font-weight: 600;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   padding: 4px 10px;
   border-radius: 999px;
@@ -140,7 +140,7 @@ footer { display: none !important; }
 }
 
 .badge.live {
-  border-color: rgba(56,189,248,0.3);
+  border-color: rgba(2,132,199,0.22);
   color: var(--blue);
   background: var(--blue-dim);
 }
@@ -148,13 +148,13 @@ footer { display: none !important; }
 /* ── INFO ROW ── */
 .info-row {
   display: flex; gap: 10px; flex-wrap: wrap;
-  margin: 0 0 24px;
+  margin: 0 0 20px;
 }
 
 .info-chip {
   font-size: 0.74rem;
   font-weight: 500;
-  color: #94a3b8;
+  color: var(--text-muted);
   background: var(--surface-2);
   border: 1px solid var(--border);
   border-radius: 999px;
@@ -162,18 +162,17 @@ footer { display: none !important; }
   display: flex; align-items: center; gap: 6px;
 }
 
-.info-chip { color: var(--text-muted); }
-.info-chip b { color: #e2e8f0; }
+.info-chip b { color: var(--text); }
 
 /* ── SECTION LABEL ── */
 .section-label {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin: 28px 0 14px;
+  margin: 26px 0 14px;
   font-size: 0.73rem;
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-muted);
 }
@@ -196,12 +195,12 @@ footer { display: none !important; }
 /* ── FORMULA PILL ── */
 .formula-pill {
   font-family: var(--mono);
-  font-size: 0.78rem;
-  color: #7dd3fc;
+  font-size: 0.77rem;
+  color: var(--blue);
   background: var(--blue-dim);
-  border: 1px solid rgba(56,189,248,0.25);
+  border: 1px solid rgba(2,132,199,0.18);
   border-radius: 999px;
-  padding: 6px 14px;
+  padding: 5px 14px;
   display: inline-block;
   margin-top: 28px;
 }
@@ -217,50 +216,55 @@ footer { display: none !important; }
 }
 
 .charge-card:hover {
-  border-color: rgba(255,255,255,0.11);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  border-color: rgba(0,0,0,0.11);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.04);
 }
 
 .charge-header {
   display: flex;
   align-items: center;
-  gap: 9px;
-  margin-bottom: 12px;
+  gap: 10px;
+  margin-bottom: 14px;
 }
 
 .charge-dot {
-  width: 9px; height: 9px;
+  width: 10px; height: 10px;
   border-radius: 50%;
   flex-shrink: 0;
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.04);
 }
 
 .charge-name {
-  font-size: 0.72rem;
+  font-size: 0.82rem;
   font-weight: 600;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
 }
 
 .charge-idx {
   margin-left: auto;
   font-family: var(--mono);
   font-size: 0.7rem;
+  font-weight: 500;
   color: var(--text-muted);
+  background: var(--surface-2);
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
 }
 
 .input-row-labels {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 8px;
-  margin-bottom: 3px;
+  margin-bottom: 4px;
 }
 
 .input-col-label {
-  font-size: 0.7rem;
+  font-size: 0.67rem;
   font-weight: 600;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--text-faint);
   padding-left: 2px;
 }
 
@@ -289,12 +293,12 @@ div[data-testid="stNumberInput"] input {
 
 div[data-testid="stNumberInput"] input:focus {
   border-color: var(--border-glow) !important;
-  box-shadow: 0 0 0 3px rgba(56,189,248,0.08) !important;
+  box-shadow: 0 0 0 3px rgba(2,132,199,0.08) !important;
   outline: none !important;
 }
 
 div[data-testid="stNumberInput"] button {
-  background: var(--surface-3) !important;
+  background: var(--surface-2) !important;
   border: 1px solid var(--border) !important;
   color: var(--text-muted) !important;
   border-radius: 6px !important;
@@ -321,7 +325,7 @@ div[data-testid="stSelectbox"] div[data-baseweb="select"] > div:hover {
 }
 
 [data-baseweb="popover"] ul {
-  background: var(--surface-2) !important;
+  background: var(--surface-1) !important;
   border: 1px solid var(--border) !important;
   border-radius: var(--radius-md) !important;
   padding: 4px !important;
@@ -342,26 +346,26 @@ div[data-testid="stSelectbox"] div[data-baseweb="select"] > div:hover {
 /* ── BUTTON ── */
 div[data-testid="stButton"] > button {
   width: 100% !important;
-  padding: 14px 28px !important;
+  padding: 13px 28px !important;
   font-family: var(--sans) !important;
   font-size: 0.85rem !important;
   font-weight: 600 !important;
-  letter-spacing: 0.07em !important;
+  letter-spacing: 0.06em !important;
   text-transform: uppercase !important;
   color: #fff !important;
-  background: linear-gradient(135deg, #0ea5e9 0%, #7c3aed 100%) !important;
+  background: linear-gradient(135deg, #0284c7 0%, #7c3aed 100%) !important;
   border: none !important;
   border-radius: var(--radius-md) !important;
   cursor: pointer !important;
-  box-shadow: 0 1px 0 rgba(255,255,255,0.12) inset,
-              0 6px 20px rgba(14,165,233,0.18) !important;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.15) inset,
+              0 4px 14px rgba(2,132,199,0.2) !important;
   transition: transform 0.15s, box-shadow 0.15s !important;
 }
 
 div[data-testid="stButton"] > button:hover {
-  transform: translateY(-2px) !important;
+  transform: translateY(-1px) !important;
   box-shadow: 0 1px 0 rgba(255,255,255,0.15) inset,
-              0 10px 30px rgba(14,165,233,0.32) !important;
+              0 8px 24px rgba(2,132,199,0.3) !important;
 }
 
 div[data-testid="stButton"] > button:active {
@@ -392,14 +396,14 @@ div[data-testid="stButton"] > button:active {
 }
 
 .stTabs [role="tablist"] button[aria-selected="true"] {
-  background: var(--surface-3) !important;
+  background: var(--surface-2) !important;
   color: var(--text) !important;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
 }
 
 .stTabs [role="tablist"] button:hover {
   color: var(--text) !important;
-  background: rgba(255,255,255,0.04) !important;
+  background: rgba(0,0,0,0.03) !important;
 }
 
 .stTabs [data-baseweb="tab-panel"] { padding-top: 20px !important; }
@@ -407,68 +411,77 @@ div[data-testid="stButton"] > button:active {
 /* ── RESULT CARDS ── */
 .result-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
 }
 
 .rcard {
   background: var(--surface-1);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 18px 20px;
-  transition: border-color 0.2s;
+  padding: 18px 20px 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.rcard:hover { border-color: rgba(255,255,255,0.1); }
+.rcard:hover {
+  border-color: rgba(0,0,0,0.1);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+}
 
 .rcard.net-force {
-  border-top: 2px solid var(--blue);
-  background: linear-gradient(180deg, rgba(56,189,248,0.04) 0%, var(--surface-1) 100%);
+  border-left: 3px solid var(--blue);
 }
 
 .rcard-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .rcard-title {
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-muted);
 }
 
 .rcard-badge {
-  font-size: 0.63rem;
+  font-size: 0.62rem;
   font-weight: 600;
   padding: 3px 8px;
   border-radius: 999px;
   letter-spacing: 0.05em;
-  text-transform: uppercase;
 }
 
 .rcard-badge.attract {
-  background: rgba(52,211,153,0.1);
+  background: rgba(5,150,105,0.08);
   color: var(--green);
-  border: 1px solid rgba(52,211,153,0.2);
+  border: 1px solid rgba(5,150,105,0.18);
 }
 
 .rcard-badge.repel {
-  background: rgba(248,113,113,0.1);
+  background: rgba(220,38,38,0.08);
   color: var(--red);
-  border: 1px solid rgba(248,113,113,0.2);
+  border: 1px solid rgba(220,38,38,0.18);
+}
+
+.rcard-badge.net {
+  background: rgba(2,132,199,0.08);
+  color: var(--blue);
+  border: 1px solid rgba(2,132,199,0.18);
 }
 
 .rcard-value {
   font-family: var(--mono);
-  font-size: 1.45rem;
+  font-size: 1.5rem;
   font-weight: 600;
   color: var(--text);
   letter-spacing: -0.02em;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
 }
 
 .rcard-value span {
@@ -478,11 +491,23 @@ div[data-testid="stButton"] > button:active {
   margin-left: 4px;
 }
 
-.rcard-meta { display: flex; flex-direction: column; gap: 5px; }
+.rcard-meta { display: flex; flex-direction: column; gap: 4px; }
 
-.rcard-row { display: flex; justify-content: space-between; font-size: 0.74rem; }
+.rcard-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.74rem;
+  padding: 2px 0;
+}
+
+.rcard-row + .rcard-row {
+  border-top: 1px solid var(--border);
+}
+
 .rcard-row .lbl { color: var(--text-muted); }
 .rcard-row .val { font-family: var(--mono); color: var(--text); font-weight: 500; }
+.rcard-row .val.pos { color: #059669; }
+.rcard-row .val.neg { color: #dc2626; }
 
 /* ── CHART WRAPPER ── */
 .chart-wrap {
@@ -496,16 +521,16 @@ div[data-testid="stButton"] > button:active {
 .chart-label {
   font-size: 0.67rem;
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
   color: var(--text-muted);
-  padding: 12px 16px 4px;
+  padding: 10px 14px 2px;
 }
 
 /* ── ERROR ── */
 div[data-testid="stAlert"] {
-  background: rgba(248,113,113,0.06) !important;
-  border: 1px solid rgba(248,113,113,0.22) !important;
+  background: rgba(220,38,38,0.06) !important;
+  border: 1px solid rgba(220,38,38,0.2) !important;
   border-radius: var(--radius-md) !important;
   color: var(--red) !important;
   font-size: 0.84rem !important;
@@ -514,46 +539,50 @@ div[data-testid="stAlert"] {
 /* ── FOOTER ── */
 .app-footer {
   text-align: center;
-  padding: 28px 0 6px;
-  font-size: 0.7rem;
+  padding: 24px 0 6px;
+  font-size: 0.72rem;
   color: var(--text-faint);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
   border-top: 1px solid var(--border);
   margin-top: 48px;
+}
+
+.app-footer .ft-name {
+  font-weight: 600;
+  color: var(--text-muted);
 }
 
 /* ── RESPONSIVE ── */
 @media (max-width: 900px) {
   [data-testid="block-container"] { padding: 0 1rem 3rem !important; }
-  .app-header { flex-wrap: wrap; padding: 20px 18px; gap: 14px; }
+  .app-header { flex-wrap: wrap; padding: 18px 20px; gap: 12px; }
   .app-title { font-size: 1.25rem; }
   .app-badges { margin-left: 0; }
-  .app-header-logo { width: 52px; height: 52px; }
+  .app-header-logo { width: 48px; height: 48px; }
 }
 
 @media (max-width: 640px) {
   .app-header { flex-direction: column; text-align: center; padding: 16px 14px; }
-  .app-title { font-size: 1.05rem; }
-  .app-subtitle { font-size: 0.7rem; }
-  .app-header-logo { width: 48px; height: 48px; }
+  .app-title { font-size: 1.1rem; }
+  .app-subtitle { font-size: 0.68rem; }
+  .app-header-logo { width: 44px; height: 44px; }
   .info-row { gap: 6px; }
   .info-chip { font-size: 0.65rem; padding: 4px 10px; }
-  .section-label { font-size: 0.65rem; margin: 20px 0 10px; }
+  .section-label { font-size: 0.65rem; margin: 18px 0 10px; }
   .charge-card { padding: 12px 14px 8px; }
   .result-grid { grid-template-columns: 1fr; }
   .stTabs [role="tablist"] button { font-size: 0.65rem !important; padding: 6px 10px !important; }
-  .rcard-value { font-size: 1.15rem; }
+  .rcard-value { font-size: 1.2rem; }
 }
 
 @media (max-width: 480px) {
   [data-testid="block-container"] { padding: 0 0.5rem 2rem !important; }
-  .app-title { font-size: 0.9rem; }
-  .app-subtitle { font-size: 0.62rem; }
+  .app-title { font-size: 0.95rem; }
+  .app-subtitle { font-size: 0.6rem; }
   .section-label { font-size: 0.6rem; }
-  .input-col-label { font-size: 0.62rem; }
-  .rcard { padding: 14px 14px; }
-  .rcard-value { font-size: 1rem; }
-  .rcard-meta { gap: 3px; }
+  .input-col-label { font-size: 0.6rem; }
+  .rcard { padding: 14px; }
+  .rcard-value { font-size: 1.05rem; }
   .rcard-row { font-size: 0.65rem; }
 }
 </style>
@@ -576,8 +605,8 @@ st.markdown(f"""
 <div class="app-header">
   <div class="app-header-logo">{logo_html}</div>
   <div>
-    <div class="app-title">ElectroSim · Coulomb Lab</div>
-    <div class="app-subtitle">Simulación interactiva · Ley de Coulomb · Análisis vectorial 2D</div>
+    <div class="app-title"><span class="accent">Coulomb</span> Lab</div>
+    <div class="app-subtitle">Simulador de cargas eléctricas · Ley de Coulomb · Electromagnetismo</div>
   </div>
   <div class="app-badges">
     <span class="badge live">Live</span>
@@ -630,12 +659,13 @@ for i in range(num_cargas):
     target = col_a if i % 2 == 0 else col_b
     with target:
         c = COLORS[i]
+        signo = '+' if Q_DEF[i] > 0 else '−'
         st.markdown(f"""
         <div class="charge-card">
           <div class="charge-header">
-            <span class="charge-dot" style="background:{c}; box-shadow:0 0 6px {c}66;"></span>
-            <span class="charge-name" style="color:{c};">{NAMES[i]}</span>
-            <span class="charge-idx">Q{i+1}</span>
+            <span class="charge-dot" style="background:{c};"></span>
+            <span class="charge-name">Carga {i+1}</span>
+            <span class="charge-idx">Q{i+1} · {signo}</span>
           </div>
           <div class="input-row-labels">
             <span class="input-col-label">Carga (µC)</span>
@@ -746,8 +776,6 @@ if calcular:
                 <div class="rcard-row"><span class="lbl">q₂</span><span class="val">{par['q2']:+.2f} µC</span></div>
                 <div class="rcard-row"><span class="lbl">r</span><span class="val">{par['r']:.4f} m</span></div>
                 <div class="rcard-row"><span class="lbl">θ</span><span class="val">{par['theta']:.2f}°</span></div>
-                <div class="rcard-row"><span class="lbl">Fx</span><span class="val">{par['Fx']:+.4f} N</span></div>
-                <div class="rcard-row"><span class="lbl">Fy</span><span class="val">{par['Fy']:+.4f} N</span></div>
               </div>
             </div>"""
         html += '</div>'
@@ -756,17 +784,18 @@ if calcular:
     with tab2:
         html = '<div class="result-grid">'
         for fn in fuerzas_netas:
+            color = fn['color']
             html += f"""
             <div class="rcard net-force">
               <div class="rcard-header">
-                <span class="rcard-title" style="color:{fn['color']}99;">Q{fn['indice']}</span>
-                <span class="rcard-badge attract">Neta</span>
+                <span class="rcard-title">Carga {fn['indice']}</span>
+                <span class="rcard-badge net">Fuerza neta</span>
               </div>
               <div class="rcard-value">{fn['F']:.4f}<span>N</span></div>
               <div class="rcard-meta">
-                <div class="rcard-row"><span class="lbl">Fx neto</span><span class="val">{fn['Fx']:+.4f} N</span></div>
-                <div class="rcard-row"><span class="lbl">Fy neto</span><span class="val">{fn['Fy']:+.4f} N</span></div>
-                <div class="rcard-row"><span class="lbl">θ resultante</span><span class="val">{fn['theta']:.2f}°</span></div>
+                <div class="rcard-row"><span class="lbl">Fx</span><span class="val">{fn['Fx']:+.4f} N</span></div>
+                <div class="rcard-row"><span class="lbl">Fy</span><span class="val">{fn['Fy']:+.4f} N</span></div>
+                <div class="rcard-row"><span class="lbl">Dirección</span><span class="val">{fn['theta']:.2f}°</span></div>
               </div>
             </div>"""
         html += '</div>'
@@ -779,8 +808,8 @@ if calcular:
         with col_g1:
             st.markdown('<div class="chart-wrap"><div class="chart-label">Sistema de cargas · Vectores de fuerza neta</div>', unsafe_allow_html=True)
             fig1, ax1 = plt.subplots(figsize=(7, 7))
-            fig1.patch.set_facecolor('#080c14')
-            ax1.set_facecolor('#0d1220')
+            fig1.patch.set_facecolor('#ffffff')
+            ax1.set_facecolor('#f8fafc')
 
             xs = [c['x'] for c in cargas_coulombs]
             ys = [c['y'] for c in cargas_coulombs]
@@ -792,30 +821,30 @@ if calcular:
             ax1.set_ylim(yc - half, yc + half)
             ax1.set_aspect('equal')
 
-            ax1.grid(True, color='#1a2236', linewidth=0.5, alpha=0.5)
-            ax1.axhline(0, color='#1e3a5f', linewidth=0.8, alpha=0.6)
-            ax1.axvline(0, color='#1e3a5f', linewidth=0.8, alpha=0.6)
+            ax1.grid(True, color='#e2e8f0', linewidth=0.5, alpha=0.7)
+            ax1.axhline(0, color='#cbd5e1', linewidth=0.8, alpha=0.5)
+            ax1.axvline(0, color='#cbd5e1', linewidth=0.8, alpha=0.5)
 
             for p in pares_info:
                 ci = cargas_coulombs[p['i']-1]
                 cj = cargas_coulombs[p['j']-1]
                 ls = '--' if p['atraccion'] else ':'
                 ax1.plot([ci['x'], cj['x']], [ci['y'], cj['y']],
-                         color='#1e3a5f', linewidth=0.7, linestyle=ls, alpha=0.35, zorder=1)
+                         color='#cbd5e1', linewidth=0.7, linestyle=ls, alpha=0.5, zorder=1)
 
             for c, fn in zip(cargas_coulombs, fuerzas_netas):
                 col = fn['color']
-                ax1.scatter(c['x'], c['y'], s=210, color=col, zorder=4,
-                            edgecolors='white', linewidths=1.5, alpha=0.95)
+                ax1.scatter(c['x'], c['y'], s=200, color=col, zorder=4,
+                            edgecolors='white', linewidths=2, alpha=0.9)
                 signo = '+' if c['q'] > 0 else '−'
                 ax1.text(c['x'], c['y'], signo, ha='center', va='center',
-                         color='white', fontsize=12, fontweight='bold', zorder=5)
+                         color='white', fontsize=11, fontweight='bold', zorder=5)
                 ax1.text(c['x'], c['y'] - half * 0.12,
                          f"Q{c['indice']}  {cargas[c['indice']-1]['q']:.1f}µC",
-                         ha='center', va='top', fontsize=7.5, color='#94a3b8',
+                         ha='center', va='top', fontsize=7.5, color='#64748b',
                          fontfamily='monospace',
-                         bbox=dict(boxstyle='round,pad=0.2', facecolor='#080c14',
-                                   edgecolor=col+'44', linewidth=0.8), zorder=5)
+                         bbox=dict(boxstyle='round,pad=0.2', facecolor='#ffffff',
+                                   edgecolor=col+'66', linewidth=0.8), zorder=5)
                 if fn['F'] > 1e-6:
                     scale = half * 0.3
                     fx_v = (fn['Fx'] / fn['F']) * scale
@@ -827,8 +856,8 @@ if calcular:
             ax1.set_xlabel('X (m)', fontsize=8.5, color='#64748b', fontfamily='monospace')
 
             ax1.set_ylabel('Y (m)', fontsize=8.5, color='#64748b', fontfamily='monospace')
-            ax1.tick_params(colors='#64748b', labelsize=8)
-            ax1.spines[:].set_color('#1a2236')
+            ax1.tick_params(colors='#94a3b8', labelsize=7.5)
+            ax1.spines[:].set_color('#e2e8f0')
             plt.tight_layout(pad=1.2)
             st.pyplot(fig1, use_container_width=True)
             plt.close(fig1)
@@ -839,8 +868,8 @@ if calcular:
             st.markdown('<div class="chart-wrap"><div class="chart-label">Descomposición vectorial · Primer par</div>', unsafe_allow_html=True)
             if pares_info:
                 fig2, ax2 = plt.subplots(figsize=(7, 7))
-                fig2.patch.set_facecolor('#080c14')
-                ax2.set_facecolor('#0d1220')
+                fig2.patch.set_facecolor('#ffffff')
+                ax2.set_facecolor('#f8fafc')
 
                 par = pares_info[0]
                 F, Fx, Fy = par['F'], par['Fx'], par['Fy']
@@ -854,54 +883,54 @@ if calcular:
                 ax2.set_xlim(-0.8, 5.0)
                 ax2.set_ylim(-0.8, 5.0)
                 ax2.set_aspect('equal')
-                ax2.grid(True, color='#1a2236', linewidth=0.5, alpha=0.5)
+                ax2.grid(True, color='#e2e8f0', linewidth=0.5, alpha=0.7)
 
                 for ox, oy, ddx, ddy in [(0,0,4.5,0),(0,0,0,4.5)]:
                     ax2.annotate('', xy=(ox+ddx, oy+ddy), xytext=(ox,oy),
-                                 arrowprops=dict(arrowstyle='->', color='#1e3a5f', lw=1.5))
+                                 arrowprops=dict(arrowstyle='->', color='#cbd5e1', lw=1.2))
                 ax2.text(4.7, -0.18, 'X', fontsize=9, color='#64748b', fontfamily='monospace', fontweight='bold')
                 ax2.text(-0.18, 4.7, 'Y', fontsize=9, color='#64748b', fontfamily='monospace', fontweight='bold')
 
-                ax2.plot([fx_n, fx_n], [0, fy_n], color='#475569', linewidth=0.9, linestyle='--', alpha=0.5)
-                ax2.plot([0, fx_n], [fy_n, fy_n], color='#475569', linewidth=0.9, linestyle='--', alpha=0.5)
+                ax2.plot([fx_n, fx_n], [0, fy_n], color='#94a3b8', linewidth=0.8, linestyle='--', alpha=0.5)
+                ax2.plot([0, fx_n], [fy_n, fy_n], color='#94a3b8', linewidth=0.8, linestyle='--', alpha=0.5)
 
                 ax2.annotate('', xy=(fx_n, 0), xytext=(0,0),
-                             arrowprops=dict(arrowstyle='->', color='#38bdf8', lw=2.5, mutation_scale=14))
+                             arrowprops=dict(arrowstyle='->', color='#0284c7', lw=2.5, mutation_scale=14))
                 ax2.annotate('', xy=(fx_n, fy_n), xytext=(fx_n, 0),
-                             arrowprops=dict(arrowstyle='->', color='#f97316', lw=2.5, mutation_scale=14))
+                             arrowprops=dict(arrowstyle='->', color='#ea580c', lw=2.5, mutation_scale=14))
                 ax2.annotate('', xy=(f_nx, f_ny), xytext=(0,0),
-                             arrowprops=dict(arrowstyle='->', color='#a78bfa', lw=3, mutation_scale=16))
+                             arrowprops=dict(arrowstyle='->', color='#7c3aed', lw=3, mutation_scale=16))
 
                 if abs(theta_rad) > 0.01:
                     arc = np.linspace(0, theta_rad, 60)
-                    ax2.plot(0.65*np.cos(arc), 0.65*np.sin(arc), color='#f87171', linewidth=2, alpha=0.8)
+                    ax2.plot(0.65*np.cos(arc), 0.65*np.sin(arc), color='#dc2626', linewidth=1.8, alpha=0.7)
                     mid = theta_rad / 2
                     ax2.text(0.92*math.cos(mid), 0.92*math.sin(mid),
-                             f'{par["theta"]:.1f}°', fontsize=8, color='#f87171',
+                             f'{par["theta"]:.1f}°', fontsize=8, color='#dc2626',
                              fontfamily='monospace', ha='center', va='center')
 
                 ax2.text(fx_n/2, -0.38, f'Fx = {Fx:+.3f} N', ha='center', fontsize=8,
-                         color='#38bdf8', fontfamily='monospace',
-                         bbox=dict(boxstyle='round,pad=0.3', facecolor='#080c14', edgecolor='#38bdf830', linewidth=1))
+                         color='#0284c7', fontfamily='monospace',
+                         bbox=dict(boxstyle='round,pad=0.3', facecolor='#ffffff', edgecolor='#0284c730', linewidth=1))
                 ax2.text(fx_n+0.28, fy_n/2, f'Fy = {Fy:+.3f} N', ha='left', fontsize=8,
-                         color='#f97316', fontfamily='monospace',
-                         bbox=dict(boxstyle='round,pad=0.3', facecolor='#080c14', edgecolor='#f9731630', linewidth=1))
+                         color='#ea580c', fontfamily='monospace',
+                         bbox=dict(boxstyle='round,pad=0.3', facecolor='#ffffff', edgecolor='#ea580c30', linewidth=1))
                 ax2.text(f_nx*0.5-0.3, f_ny*0.5+0.22, f'|F| = {F:.3f} N', ha='center', fontsize=8,
-                         color='#a78bfa', fontfamily='monospace',
-                         bbox=dict(boxstyle='round,pad=0.3', facecolor='#080c14', edgecolor='#a78bfa30', linewidth=1))
+                         color='#7c3aed', fontfamily='monospace',
+                         bbox=dict(boxstyle='round,pad=0.3', facecolor='#ffffff', edgecolor='#7c3aed30', linewidth=1))
 
                 legend_items = [
-                    mpatches.Patch(color='#a78bfa', label=f'Q{par["i"]}↔Q{par["j"]}  |F|={F:.4f}N'),
-                    mpatches.Patch(color='#38bdf8', label=f'Fx = {Fx:+.4f} N'),
-                    mpatches.Patch(color='#f97316', label=f'Fy = {Fy:+.4f} N'),
+                    mpatches.Patch(color='#7c3aed', label=f'Q{par["i"]}↔Q{par["j"]}  |F|={F:.4f}N'),
+                    mpatches.Patch(color='#0284c7', label=f'Fx = {Fx:+.4f} N'),
+                    mpatches.Patch(color='#ea580c', label=f'Fy = {Fy:+.4f} N'),
                 ]
                 leg = ax2.legend(handles=legend_items, loc='lower right', fontsize=7.5,
-                                 framealpha=0.85, facecolor='#0d1220', edgecolor='#1a2236',
-                                 labelcolor='#94a3b8')
+                                 framealpha=0.9, facecolor='#ffffff', edgecolor='#e2e8f0',
+                                 labelcolor='#475569')
                 leg.get_frame().set_linewidth(0.8)
 
-                ax2.tick_params(colors='#64748b', labelsize=8)
-                ax2.spines[:].set_color('#1a2236')
+                ax2.tick_params(colors='#94a3b8', labelsize=7.5)
+                ax2.spines[:].set_color('#e2e8f0')
                 plt.tight_layout(pad=1.2)
                 st.pyplot(fig2, use_container_width=True)
                 plt.close(fig2)
@@ -912,6 +941,6 @@ if calcular:
 # ─────────────────────────────────────────────
 st.markdown("""
 <div class="app-footer">
-  Proyecto de Cargas de Coulomb · Electromagnetismo &nbsp;·&nbsp; UTS
+  <span class="ft-name">Coulomb Lab</span> · Proyecto de Cargas de Coulomb &nbsp;·&nbsp; Electromagnetismo &nbsp;·&nbsp; UTS
 </div>
 """, unsafe_allow_html=True)
