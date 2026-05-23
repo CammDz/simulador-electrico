@@ -1508,112 +1508,99 @@ if calcular:
                 theta_rad = math.radians(par['theta'])
                 theta_deg = par['theta']
                 max_c = max(abs(Fx), abs(Fy), F, 0.01)
-                norm = 3.8 / max_c
+                norm = 3.5 / max_c
                 fx_n = Fx * norm
                 fy_n = Fy * norm
                 f_nx = F * norm * math.cos(theta_rad)
                 f_ny = F * norm * math.sin(theta_rad)
 
-                ax2.set_xlim(-0.6, 5.4)
-                ax2.set_ylim(-0.6, 5.4)
+                ax2.set_xlim(-0.8, 5.8)
+                ax2.set_ylim(-0.8, 5.8)
                 ax2.set_aspect('equal')
-                ax2.grid(True, color='#e2e8f0', linewidth=0.4, alpha=0.5)
+                ax2.grid(True, color='#e2e8f0', linewidth=0.4, alpha=0.4)
 
                 # Ejes de referencia (suaves)
-                ax2.axhline(0, color='#e2e8f0', linewidth=0.6, zorder=0)
-                ax2.axvline(0, color='#e2e8f0', linewidth=0.6, zorder=0)
-                ax2.annotate('', xy=(4.8, 0), xytext=(0,0),
-                             arrowprops=dict(arrowstyle='->', color='#cbd5e1', lw=0.8))
-                ax2.annotate('', xy=(0, 4.8), xytext=(0,0),
-                             arrowprops=dict(arrowstyle='->', color='#cbd5e1', lw=0.8))
-                ax2.text(4.9, -0.12, 'x', fontsize=8, color='#94a3b8', fontfamily='monospace')
-                ax2.text(-0.14, 4.9, 'y', fontsize=8, color='#94a3b8', fontfamily='monospace')
+                ax2.axhline(0, color='#e2e8f0', linewidth=0.5, zorder=0)
+                ax2.axvline(0, color='#e2e8f0', linewidth=0.5, zorder=0)
+                ax2.annotate('', xy=(5.2, 0), xytext=(0,0),
+                             arrowprops=dict(arrowstyle='->', color='#cbd5e1', lw=0.7))
+                ax2.annotate('', xy=(0, 5.2), xytext=(0,0),
+                             arrowprops=dict(arrowstyle='->', color='#cbd5e1', lw=0.7))
+                ax2.text(5.25, -0.15, 'x', fontsize=7.5, color='#94a3b8', fontfamily='monospace')
+                ax2.text(-0.18, 5.25, 'y', fontsize=7.5, color='#94a3b8', fontfamily='monospace')
 
                 # Líneas de proyección (muy sutiles)
-                ax2.plot([fx_n, fx_n], [0, fy_n], color='#cbd5e1', linewidth=0.6, linestyle='--', alpha=0.4)
-                ax2.plot([0, fx_n], [fy_n, fy_n], color='#cbd5e1', linewidth=0.6, linestyle='--', alpha=0.4)
+                ax2.plot([fx_n, fx_n], [0, fy_n], color='#cbd5e1', linewidth=0.5, linestyle='--', alpha=0.35)
+                ax2.plot([0, fx_n], [fy_n, fy_n], color='#cbd5e1', linewidth=0.5, linestyle='--', alpha=0.35)
 
                 # Vectores principales
-                # Fx (horizontal, azul)
                 ax2.annotate('', xy=(fx_n, 0), xytext=(0,0),
-                             arrowprops=dict(arrowstyle='->', color='#0284c7', lw=2.8, mutation_scale=16))
-                # Fy (vertical, naranja)
+                             arrowprops=dict(arrowstyle='->', color='#0284c7', lw=3, mutation_scale=18))
                 ax2.annotate('', xy=(fx_n, fy_n), xytext=(fx_n, 0),
-                             arrowprops=dict(arrowstyle='->', color='#ea580c', lw=2.8, mutation_scale=16))
-                # Resultante (diagonal, violeta)
+                             arrowprops=dict(arrowstyle='->', color='#ea580c', lw=3, mutation_scale=18))
                 ax2.annotate('', xy=(f_nx, f_ny), xytext=(0,0),
-                             arrowprops=dict(arrowstyle='->', color='#7c3aed', lw=3.5, mutation_scale=20))
+                             arrowprops=dict(arrowstyle='->', color='#7c3aed', lw=3.8, mutation_scale=22))
 
-                # Etiquetas de vectores (posicionadas cuidadosamente)
-                # Fx: sobre el eje, ligeramente arriba si el vector es corto
-                fx_lab_y = -0.35
-                ax2.text(fx_n/2, fx_lab_y, 'Fx', ha='center', fontsize=9,
-                         color='#0284c7', fontfamily='monospace', fontweight='bold')
-                ax2.text(fx_n/2, fx_lab_y - 0.25, f'{Fx:+.3f} N', ha='center', fontsize=7,
-                         color='#0284c7', fontfamily='monospace')
+                # ── Etiqueta Fx (arriba del vector horizontal) ──
+                fx_lab_x = max(fx_n / 2, 0.6)
+                ax2.text(fx_lab_x, 0.35, f'Fx = {Fx:+.3f} N', ha='center', va='bottom',
+                         fontsize=8, color='#0284c7', fontfamily='monospace', fontweight='bold')
 
-                # Fy: a la derecha de la flecha vertical
-                off_x = 0.25 if fy_n >= 0 else 0.25
-                ax2.text(fx_n + off_x, fy_n/2, 'Fy', va='center', fontsize=9,
-                         color='#ea580c', fontfamily='monospace', fontweight='bold')
-                ax2.text(fx_n + off_x, fy_n/2 - 0.28, f'{Fy:+.3f} N', va='center', fontsize=7,
-                         color='#ea580c', fontfamily='monospace')
+                # ── Etiqueta Fy (a la derecha o izquierda del vector vertical) ──
+                fy_ha = 'left'
+                fy_lab_x = fx_n + 0.35
+                if fy_lab_x > 5.0:
+                    fy_lab_x = fx_n - 0.35
+                    fy_ha = 'right'
+                ax2.text(fy_lab_x, fy_n / 2, f'Fy = {Fy:+.3f} N', ha=fy_ha, va='center',
+                         fontsize=8, color='#ea580c', fontfamily='monospace', fontweight='bold')
 
-                # Resultante: en el punto medio, ligeramente desplazado
-                mid_x = f_nx * 0.45
-                mid_y = f_ny * 0.45
-                # Desplazar perpendicular para no tapar el vector
-                perp_len = 0.25
-                ang_perp = theta_rad + math.pi/2
-                if fy_n >= 0:
-                    off_rx = perp_len * math.cos(ang_perp)
-                    off_ry = perp_len * math.sin(ang_perp)
+                # ── Etiqueta F (resultante, desplazada perpendicular) ──
+                perp = 0.5
+                if f_ny >= 0:
+                    ang_p = theta_rad + math.pi / 2
                 else:
-                    off_rx = -perp_len * math.cos(ang_perp)
-                    off_ry = -perp_len * math.sin(ang_perp)
-                ax2.text(mid_x + off_rx, mid_y + off_ry, 'F', ha='center', va='center', fontsize=10,
-                         color='#7c3aed', fontfamily='monospace', fontweight='bold')
-                ax2.text(mid_x + off_rx, mid_y + off_ry - 0.3, f'{F:.3f} N', ha='center', fontsize=7,
-                         color='#7c3aed', fontfamily='monospace')
+                    ang_p = theta_rad - math.pi / 2
+                # Usar offset perpendicular fijo (no proporcional a la longitud)
+                lx = f_nx * 0.5 + perp * math.cos(ang_p)
+                ly = f_ny * 0.5 + perp * math.sin(ang_p)
+                # Asegurar que no se salga del área visible
+                lx = max(-0.5, min(5.5, lx))
+                ly = max(-0.5, min(5.5, ly))
+                ax2.text(lx, ly, f'F = {F:.3f} N', ha='center', va='center',
+                         fontsize=9, color='#7c3aed', fontfamily='monospace', fontweight='bold')
 
-                # Arco del ángulo
+                # ── Arco del ángulo ──
                 if abs(theta_rad) > 0.01:
                     arc_r = 0.7
                     arc = np.linspace(0, theta_rad, 60)
-                    ax2.plot(arc_r*np.cos(arc), arc_r*np.sin(arc), color='#dc2626', linewidth=1.5, alpha=0.6)
+                    ax2.plot(arc_r*np.cos(arc), arc_r*np.sin(arc), color='#dc2626', linewidth=1.5, alpha=0.5)
                     mid = theta_rad / 2
                     ang_lab_r = 0.95
+                    # Posicionar la etiqueta del ángulo fuera del arco
                     ax2.text(ang_lab_r*math.cos(mid), ang_lab_r*math.sin(mid),
                              f'{theta_deg:.1f}°', fontsize=7.5, color='#dc2626',
                              fontfamily='monospace', ha='center', va='center')
 
-                # Pequeños marcadores de cuadrante en las esquinas
-                ax2.text(4.8, 4.8, 'Q1', fontsize=6.5, color='#cbd5e1', fontfamily='monospace', ha='right', va='top', alpha=0.6)
-                ax2.text(-0.5, 4.8, 'Q2', fontsize=6.5, color='#cbd5e1', fontfamily='monospace', ha='left', va='top', alpha=0.6)
-                ax2.text(-0.5, -0.5, 'Q3', fontsize=6.5, color='#cbd5e1', fontfamily='monospace', ha='left', va='bottom', alpha=0.6)
-                ax2.text(4.8, -0.5, 'Q4', fontsize=6.5, color='#cbd5e1', fontfamily='monospace', ha='right', va='bottom', alpha=0.6)
-
+                # ── Leyenda compacta ──
                 legend_items = [
-                    mpatches.Patch(color='#7c3aed', label=f'Fuerza resultante  |F| = {F:.4f} N'),
-                    mpatches.Patch(color='#0284c7', label=f'Componente horizontal  Fx = {Fx:+.4f} N'),
-                    mpatches.Patch(color='#ea580c', label=f'Componente vertical  Fy = {Fy:+.4f} N'),
+                    mpatches.Patch(color='#7c3aed', label=f'F  |F| = {F:.4f} N'),
+                    mpatches.Patch(color='#0284c7', label=f'Fx  Fx = {Fx:+.4f} N'),
+                    mpatches.Patch(color='#ea580c', label=f'Fy  Fy = {Fy:+.4f} N'),
                 ]
-                leg = ax2.legend(handles=legend_items, loc='upper left', fontsize=7,
+                leg = ax2.legend(handles=legend_items, loc='upper left', fontsize=6.5,
                                  framealpha=0.85, facecolor='#ffffff', edgecolor='#e2e8f0',
                                  labelcolor='#475569')
-                leg.get_frame().set_linewidth(0.6)
+                leg.get_frame().set_linewidth(0.5)
 
-                ax2.tick_params(colors='#cbd5e1', labelsize=6.5)
+                ax2.tick_params(colors='#cbd5e1', labelsize=6)
                 ax2.spines[:].set_color('#e2e8f0')
                 plt.tight_layout(pad=0.8)
                 st.pyplot(fig2, use_container_width=True)
                 plt.close(fig2)
 
                 # Panel de datos de descomposición
-                if fx_n > 0:
-                    dir_label = "derecha"
-                else:
-                    dir_label = "izquierda"
+                dir_label = "derecha" if fx_n > 0 else "izquierda"
                 if fy_n > 0:
                     dir_label += "/arriba"
                 elif fy_n < 0:
